@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon: #2DAA68;
+}
+
+/* Usamos CSS puro para el body para que no falle */
+body {
+  background-color: black;
+  color: white;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-neon {
+  color: var(--color-neon);
+}
