@@ -129,7 +129,7 @@ export default function ArplastApp() {
       <div className={`relative w-full ${isPanelOpen ? 'h-[45dvh]' : 'flex-1 h-[auto]'} landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[70%] md:w-[70%] flex-shrink-0 flex items-center justify-center border-b landscape:border-b-0 landscape:border-r md:border-b-0 md:border-r border-black/10 dark:border-white/10 transition-all duration-300`}>
         
         {/* LOGO Y DATOS FLOTANTES */}
-        <div className="absolute top-6 left-6 z-20 flex flex-col items-start pointer-events-none">
+        <div className="absolute top-6 left-24 md:left-28 z-20 flex flex-col items-start pointer-events-none">
           <div className="bg-white px-3 py-2 rounded-xl mb-3 shadow-md border border-black/5">
             <img src="/logo.png" alt="Arplast" className="h-4 w-auto object-contain" />
           </div>
@@ -142,49 +142,59 @@ export default function ArplastApp() {
         </div>
 
         {/* BOTONES DE VISTA FLOTANTES */}
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
-          <div className="relative group/type">
-             <ViewButton label="TIPO" icon={<List size={24} />} isDarkMode={isDarkMode} isTop />
-             <div className={`absolute top-0 left-14 hidden group-hover/type:flex flex-col gap-1 p-2 rounded-xl border shadow-xl ${isDarkMode ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-black/10'}`}>
+        <div className="absolute left-0 top-[90px] bottom-[20px] flex flex-col gap-3 z-40 overflow-y-auto [&::-webkit-scrollbar]:hidden w-[220px] pl-4 items-start pointer-events-none" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+          <div className="relative flex-shrink-0 group/type pointer-events-auto">
+             <ViewButton label="TIPO" icon={<List />} isDarkMode={isDarkMode} isTop />
+             <div className={`absolute top-0 left-[60px] hidden group-hover/type:flex flex-col gap-1 p-2 rounded-xl border shadow-xl z-50 ${isDarkMode ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-black/10'}`}>
                <button onClick={() => setType('1P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '1P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 1 Pieza</button>
                <button onClick={() => setType('2P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '2P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 2 Piezas</button>
                <button onClick={() => setType('3P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '3P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 3 Piezas</button>
                <button onClick={() => setType('MIXTO')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === 'MIXTO' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo Mixto</button>
              </div>
           </div>
-          <ViewButton label="CÁMARA AR" icon={<Scan size={24} />} active={arMode} isRed={arMode} onClick={() => setArMode(!arMode)} isDarkMode={isDarkMode} isTop />
-          <ViewButton label="FOTO" icon={<Camera size={24} />} onClick={handleCapturePhoto} isDarkMode={isDarkMode} isTop />
-          <ViewButton label="GUARDAR" icon={<Save size={24} />} onClick={handleSaveProject} isDarkMode={isDarkMode} isTop />
-          <div className="relative">
+          <div className="flex-shrink-0 pointer-events-auto">
+             <ViewButton label="CÁMARA" icon={<Scan />} active={arMode} isRed={arMode} onClick={() => setArMode(!arMode)} isDarkMode={isDarkMode} isTop />
+          </div>
+          <div className="flex-shrink-0 pointer-events-auto">
+             <ViewButton label="FOTO" icon={<Camera />} onClick={handleCapturePhoto} isDarkMode={isDarkMode} isTop />
+          </div>
+          <div className="flex-shrink-0 pointer-events-auto">
+             <ViewButton label="GUARDAR" icon={<Save />} onClick={handleSaveProject} isDarkMode={isDarkMode} isTop />
+          </div>
+          <div className="relative flex-shrink-0 pointer-events-auto">
             <input type="file" accept=".json" style={{ display: 'none' }} id="project-upload" onChange={handleOpenProject} />
-            <ViewButton label="ABRIR" icon={<FolderOpen size={24} />} onClick={() => document.getElementById('project-upload')?.click()} isDarkMode={isDarkMode} isTop />
+            <ViewButton label="ABRIR" icon={<FolderOpen />} onClick={() => document.getElementById('project-upload')?.click()} isDarkMode={isDarkMode} isTop />
           </div>
 
-          <div className={`h-px w-6 mx-auto my-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
+          <div className={`h-px w-6 ml-[14px] my-1 flex-shrink-0 pointer-events-none ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
 
-          <ViewButton
-            label="SECCIÓN"
-            icon={<Scissors size={24} />}
-            view="section"
-            isRed
-            active={isSectionActive}
-            onClick={() => setSectionActive(!isSectionActive)}
-            isDarkMode={isDarkMode}
-          />
+          <div className="flex-shrink-0 pointer-events-auto">
+             <ViewButton label="SECCIÓN" icon={<Scissors />} view="section" isRed active={isSectionActive} onClick={() => setSectionActive(!isSectionActive)} isDarkMode={isDarkMode} />
+          </div>
 
-          <div className={`h-px w-6 mx-auto my-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
+          <div className={`h-px w-6 ml-[14px] my-1 flex-shrink-0 pointer-events-none ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
 
-          <ViewButton label="ALZADO" icon={<Square size={24} />} view="front" isDarkMode={isDarkMode} />
-          <ViewButton label="PLANTA" icon={<Box size={24} />} view="top" isDarkMode={isDarkMode} />
-          <ViewButton label="PERFIL" icon={<Layout size={24} />} view="side" isDarkMode={isDarkMode} />
-          <ViewButton label="EXPLOSIÓN" icon={<Layers size={24} />} active={isExploded} onClick={() => setIsExploded(!isExploded)} isDarkMode={isDarkMode} />
+          <div className="flex-shrink-0 pointer-events-auto">
+            <ViewButton label="ALZADO" icon={<Square />} view="front" isDarkMode={isDarkMode} />
+          </div>
+          <div className="flex-shrink-0 pointer-events-auto">
+            <ViewButton label="PLANTA" icon={<Box />} view="top" isDarkMode={isDarkMode} />
+          </div>
+          <div className="flex-shrink-0 pointer-events-auto">
+            <ViewButton label="PERFIL" icon={<Layout />} view="side" isDarkMode={isDarkMode} />
+          </div>
+          <div className="flex-shrink-0 pointer-events-auto pb-6">
+            <ViewButton label="EXPLOTAR" icon={<Layers />} active={isExploded} onClick={() => setIsExploded(!isExploded)} isDarkMode={isDarkMode} />
+          </div>
         </div>
 
         {/* 7. VISOR 3D LIMITADO AL CONTENEDOR */}
-        <div className="w-full h-full absolute inset-0 -z-10">
-           {arMode && <ARCameraBackground />}
-        </div>
-        <div className="w-full h-full absolute inset-0"> 
+        {arMode && (
+          <div className="w-full h-full absolute inset-0 z-0 pointer-events-none bg-black">
+             <ARCameraBackground />
+          </div>
+        )}
+        <div className={`w-full h-full absolute inset-0 ${arMode ? 'z-10' : 'z-0'}`}> 
            <Viewer3D />
         </div>
       </div>
@@ -269,22 +279,23 @@ function ViewButton({ label, icon, view, isRed, disabled, isDarkMode, active, on
     }
   };
 
-  const buttonClasses = isRed
+  const ringClass = active && !isRed ? 'ring-2 ring-offset-2 ring-offset-transparent ring-[#00D154]' : '';
+  const bgColor = isDarkMode ? 'bg-[#1A1A1A] border-white/10 hover:bg-[#2A2A2A]' : 'bg-white border-black/10 hover:bg-[#F2F2F2]';
+  const neonText = isDarkMode ? 'text-[#00D154]' : 'text-[#008234]';
+  
+  const buttonStyle = isRed 
     ? (active ? 'bg-red-500 text-white border-red-600' : 'bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20')
-    : isTop 
-      ? (isDarkMode ? 'bg-[#2A2A2A] border-white/20 text-white/70 hover:text-white' : 'bg-[#E5E5E5] border-black/20 text-black/70 hover:text-black')
-      : (isDarkMode ? 'bg-[#1A1A1A] border-white/10 text-white/40 hover:text-[#008234]' : 'bg-white border-black/10 text-black/40 hover:text-[#008234]');
+    : `${bgColor} ${neonText}`;
 
   return (
-    <div className="relative flex items-center group">
-      <button
-        onClick={handleClick}
-        className={`p-3.5 sm:p-3 rounded-full transition-all border shadow-lg ${disabled ? 'opacity-10 cursor-not-allowed' : 'active:scale-95'} ${buttonClasses}`}
-      >
-        {icon}
-      </button>
-      <span className="absolute left-14 px-3 py-1 bg-[#008234] text-white text-[9px] font-black rounded-md z-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">{label}</span>
-    </div>
+    <button onClick={handleClick} className={`flex flex-col flex-shrink-0 items-center justify-center gap-1 transition-all group w-[52px] ${disabled ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'}`}>
+      <div className={`p-2.5 sm:p-3 rounded-full border shadow-lg flex items-center justify-center transition-all ${buttonStyle} ${ringClass}`}>
+         <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+            {React.cloneElement(icon, { className: "w-full h-full" })}
+         </div>
+      </div>
+      <span className={`text-[7px] md:text-[8px] uppercase font-black tracking-widest text-center leading-tight whitespace-nowrap ${neonText}`}>{label}</span>
+    </button>
   );
 }
 
@@ -506,7 +517,7 @@ function ARCameraBackground() {
   return (
     <video
       ref={videoRef}
-      className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
+      className="absolute inset-0 w-full h-full object-cover opacity-100"
       autoPlay
       playsInline
       muted
