@@ -120,11 +120,11 @@ export default function ArplastApp() {
 
   return (
     // 3. CONTENEDOR PRINCIPAL
-    <main className={`flex flex-col md:flex-row w-full h-screen overflow-hidden transition-colors duration-500 font-sans 
+    <main className={`flex flex-col landscape:flex-row md:flex-row w-full h-[100dvh] overflow-hidden transition-colors duration-500 font-sans 
       ${isDarkMode ? 'bg-[#050505] text-white' : 'bg-[#F2F2F2] text-black'}`}>
 
       {/* 4. VISOR 3D (ARRIBA EN MÓVIL, 70% IZQ EN PC) */}
-      <div className="relative w-full h-[60vh] md:h-screen md:w-[70%] flex-shrink-0 flex items-center justify-center border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10">
+      <div className="relative w-full h-[45dvh] landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[70%] md:w-[70%] flex-shrink-0 flex items-center justify-center border-b landscape:border-b-0 landscape:border-r md:border-b-0 md:border-r border-black/10 dark:border-white/10">
         
         {/* LOGO Y DATOS FLOTANTES */}
         <div className="absolute top-6 left-6 z-20 flex flex-col items-start pointer-events-none">
@@ -142,27 +142,27 @@ export default function ArplastApp() {
         {/* BOTONES DE VISTA FLOTANTES */}
         <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
           <div className="relative group/type">
-             <ViewButton label="TIPO" icon={<List size={20} />} isDarkMode={isDarkMode} isTop />
+             <ViewButton label="TIPO" icon={<List size={24} />} isDarkMode={isDarkMode} isTop />
              <div className={`absolute top-0 left-14 hidden group-hover/type:flex flex-col gap-1 p-2 rounded-xl border shadow-xl ${isDarkMode ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-black/10'}`}>
-               <button onClick={() => setType('1P')} className={`text-[10px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '1P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 1 Pieza</button>
-               <button onClick={() => setType('2P')} className={`text-[10px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '2P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 2 Piezas</button>
-               <button onClick={() => setType('3P')} className={`text-[10px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '3P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 3 Piezas</button>
-               <button onClick={() => setType('MIXTO')} className={`text-[10px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === 'MIXTO' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo Mixto</button>
+               <button onClick={() => setType('1P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '1P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 1 Pieza</button>
+               <button onClick={() => setType('2P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '2P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 2 Piezas</button>
+               <button onClick={() => setType('3P')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === '3P' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo 3 Piezas</button>
+               <button onClick={() => setType('MIXTO')} className={`text-[10px] sm:text-[12px] font-bold px-3 py-2 rounded-lg text-left whitespace-nowrap hover:bg-[#008234] hover:text-white ${type === 'MIXTO' ? 'text-[#008234]' : (isDarkMode ? 'text-white' : 'text-black')}`}>Tubo Mixto</button>
              </div>
           </div>
-          <ViewButton label="CÁMARA AR" icon={<Scan size={20} />} active={arMode} isRed={arMode} onClick={() => setArMode(!arMode)} isDarkMode={isDarkMode} isTop />
-          <ViewButton label="FOTO" icon={<Camera size={20} />} onClick={handleCapturePhoto} isDarkMode={isDarkMode} isTop />
-          <ViewButton label="GUARDAR" icon={<Save size={20} />} onClick={handleSaveProject} isDarkMode={isDarkMode} isTop />
+          <ViewButton label="CÁMARA AR" icon={<Scan size={24} />} active={arMode} isRed={arMode} onClick={() => setArMode(!arMode)} isDarkMode={isDarkMode} isTop />
+          <ViewButton label="FOTO" icon={<Camera size={24} />} onClick={handleCapturePhoto} isDarkMode={isDarkMode} isTop />
+          <ViewButton label="GUARDAR" icon={<Save size={24} />} onClick={handleSaveProject} isDarkMode={isDarkMode} isTop />
           <div className="relative">
             <input type="file" accept=".json" style={{ display: 'none' }} id="project-upload" onChange={handleOpenProject} />
-            <ViewButton label="ABRIR" icon={<FolderOpen size={20} />} onClick={() => document.getElementById('project-upload')?.click()} isDarkMode={isDarkMode} isTop />
+            <ViewButton label="ABRIR" icon={<FolderOpen size={24} />} onClick={() => document.getElementById('project-upload')?.click()} isDarkMode={isDarkMode} isTop />
           </div>
 
           <div className={`h-px w-6 mx-auto my-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
 
           <ViewButton
             label="SECCIÓN"
-            icon={<Scissors size={20} />}
+            icon={<Scissors size={24} />}
             view="section"
             isRed
             active={isSectionActive}
@@ -172,10 +172,10 @@ export default function ArplastApp() {
 
           <div className={`h-px w-6 mx-auto my-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
 
-          <ViewButton label="ALZADO" icon={<Square size={20} />} view="front" isDarkMode={isDarkMode} />
-          <ViewButton label="PLANTA" icon={<Box size={20} />} view="top" isDarkMode={isDarkMode} />
-          <ViewButton label="PERFIL" icon={<Layout size={20} />} view="side" isDarkMode={isDarkMode} />
-          <ViewButton label="EXPLOSIÓN" icon={<Layers size={20} />} active={isExploded} onClick={() => setIsExploded(!isExploded)} isDarkMode={isDarkMode} />
+          <ViewButton label="ALZADO" icon={<Square size={24} />} view="front" isDarkMode={isDarkMode} />
+          <ViewButton label="PLANTA" icon={<Box size={24} />} view="top" isDarkMode={isDarkMode} />
+          <ViewButton label="PERFIL" icon={<Layout size={24} />} view="side" isDarkMode={isDarkMode} />
+          <ViewButton label="EXPLOSIÓN" icon={<Layers size={24} />} active={isExploded} onClick={() => setIsExploded(!isExploded)} isDarkMode={isDarkMode} />
         </div>
 
         {/* 7. VISOR 3D LIMITADO AL CONTENEDOR */}
@@ -188,45 +188,45 @@ export default function ArplastApp() {
       </div>
 
       {/* 8. PANEL DE CONFIGURACIÓN (ABAJO EN MÓVIL, 30% DER EN PC) */}
-      <div className={`w-full h-[40vh] md:h-screen md:w-[30%] flex flex-col shadow-2xl z-50 transition-colors
+      <div className={`w-full h-[55dvh] landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[30%] md:w-[30%] flex flex-col shadow-2xl z-50 transition-colors
         ${isDarkMode ? 'bg-[#121212]' : 'bg-white'}`}>
         
         {/* ÁREA DE PANELES SCROLLABLE */}
-        <div className="flex-1 overflow-y-auto w-full">
+        <div className="flex-1 overflow-y-auto w-full min-h-0">
            <PanelsContainer />
         </div>
 
         {/* 9. DOCK BAR (SIEMPRE VISIBLE AL FONDO O ARRIBA DEL PANEL) */}
         <div className={`flex justify-around items-center p-3 sm:p-4 border-t flex-shrink-0 transition-colors
           ${isDarkMode ? 'border-white/10 bg-[#0A0A0A]' : 'border-black/5 bg-gray-50'}`}>
-           <DockButton active={activePanel === 'MEDIDAS'} onClick={() => setActivePanel('MEDIDAS')} icon={<Ruler size={22} />} label="Medidas" isDarkMode={isDarkMode} />
-           <DockButton active={activePanel === 'PIEZAS'} onClick={() => setActivePanel('PIEZAS')} icon={<Settings size={22} />} label="Piezas" isDarkMode={isDarkMode} />
-           <DockButton active={activePanel === 'COLORES'} onClick={() => setActivePanel('COLORES')} icon={<Palette size={22} />} label="Colores" isDarkMode={isDarkMode} />
+           <DockButton active={activePanel === 'MEDIDAS'} onClick={() => setActivePanel('MEDIDAS')} icon={<Ruler size={24} />} label="Medidas" isDarkMode={isDarkMode} />
+           <DockButton active={activePanel === 'PIEZAS'} onClick={() => setActivePanel('PIEZAS')} icon={<Settings size={24} />} label="Piezas" isDarkMode={isDarkMode} />
+           <DockButton active={activePanel === 'COLORES'} onClick={() => setActivePanel('COLORES')} icon={<Palette size={24} />} label="Colores" isDarkMode={isDarkMode} />
            
            <div className={`w-px h-6 mx-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
            
-           <button onClick={() => setIsDesignOpen(true)} className="flex flex-col items-center gap-1 transition-all group">
-             <div className={`w-6 h-6 border-2 rounded-sm flex items-center justify-center text-[10px] font-black italic transition-colors
+           <button onClick={() => setIsDesignOpen(true)} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
+             <div className={`w-7 h-7 border-2 rounded-sm flex items-center justify-center text-[10px] font-black italic transition-colors
                ${isDarkMode ? 'border-white/40 text-white/40 group-hover:text-green-500 group-hover:border-green-500' : 'border-black/40 text-black/40 group-hover:text-green-600 group-hover:border-green-600'}`}>
                ART
              </div>
-             <span className={`text-[7px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Diseño</span>
+             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Diseño</span>
            </button>
 
-           <button onClick={toggleDarkMode} className="flex flex-col items-center gap-1 transition-all group">
+           <button onClick={toggleDarkMode} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
              <div className={isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 group-hover:text-black'}>
-               {isDarkMode ? <Sun size={22} /> : <Moon size={22} />}
+               {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
              </div>
-             <span className={`text-[7px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Luz</span>
+             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Luz</span>
            </button>
 
            <button onClick={() => {
              setActivePanel('ESTUDIO');
-           }} className="flex flex-col items-center gap-1 transition-all group">
+           }} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
              <div className={activePanel === 'ESTUDIO' || studioMode ? 'text-green-500' : (isDarkMode ? 'text-zinc-600 group-hover:text-white' : 'text-zinc-400 group-hover:text-black')}>
-               <Sparkles size={22} />
+               <Sparkles size={24} />
              </div>
-             <span className={`text-[7px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Estudio</span>
+             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Estudio</span>
            </button>
         </div>
       </div>
@@ -273,7 +273,7 @@ function ViewButton({ label, icon, view, isRed, disabled, isDarkMode, active, on
     <div className="relative flex items-center group">
       <button
         onClick={handleClick}
-        className={`p-3 rounded-full transition-all border shadow-lg ${disabled ? 'opacity-10 cursor-not-allowed' : 'active:scale-95'} ${buttonClasses}`}
+        className={`p-3.5 sm:p-3 rounded-full transition-all border shadow-lg ${disabled ? 'opacity-10 cursor-not-allowed' : 'active:scale-95'} ${buttonClasses}`}
       >
         {icon}
       </button>
@@ -284,16 +284,16 @@ function ViewButton({ label, icon, view, isRed, disabled, isDarkMode, active, on
 
 function DockButton({ active, onClick, icon, label, isDarkMode }: any) {
   return (
-    <button onClick={onClick} className={`flex flex-col items-center gap-1 transition-all ${active ? 'text-[#008234]' : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}>
+    <button onClick={onClick} className={`flex flex-col items-center gap-1.5 p-1 transition-all ${active ? 'text-[#008234]' : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}>
       {icon}
-      <span className="text-[7px] uppercase font-black tracking-widest">{label}</span>
+      <span className="text-[8px] uppercase font-black tracking-widest">{label}</span>
     </button>
   );
 }
 
 function ColorPickerInput({ value, onChange }: { value: string, onChange: (val: string) => void }) {
     return (
-        <div className="relative overflow-hidden w-11 h-[52px] rounded-xl border border-black/10 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 shrink-0 flex items-center justify-center">
+        <div className="relative overflow-hidden w-14 h-[56px] rounded-xl border border-black/10 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 shrink-0 flex items-center justify-center">
             {/* Fondo de esmalte de colores para indicar que es un selector */}
             <div className="absolute inset-0 rounded-xl" style={{ 
                 background: 'conic-gradient(from 180deg at 50% 50%, #ff0000 0%, #ff8000 12.5%, #ffff00 25%, #00ff00 37.5%, #00ffff 50%, #0000ff 62.5%, #8000ff 75%, #ff00ff 87.5%, #ff0000 100%)',
@@ -308,9 +308,9 @@ function ColorPickerInput({ value, onChange }: { value: string, onChange: (val: 
 
 function ColorPreset({ color, label, active, onClick, isDarkMode }: any) {
   return (
-    <button onClick={onClick} className={`flex flex-col items-center justify-center p-1.5 rounded-xl border transition-all hover:scale-105 active:scale-95 ${active ? 'border-[#008234] ring-1 ring-[#008234] bg-[#008234]/10 shadow-sm' : (isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-black/10 hover:bg-black/5')}`}>
-      <div className="w-8 h-8 rounded-lg shadow-inner border border-black/10" style={{ backgroundColor: color }} />
-      <span className={`text-[8px] mt-1.5 font-black uppercase tracking-wider ${isDarkMode ? 'text-white/70' : 'text-black/70'}`}>{label}</span>
+    <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 ${active ? 'border-[#008234] ring-1 ring-[#008234] bg-[#008234]/10 shadow-sm' : (isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-black/10 hover:bg-black/5')}`}>
+      <div className="w-9 h-9 rounded-lg shadow-inner border border-black/10" style={{ backgroundColor: color }} />
+      <span className={`text-[9px] mt-1.5 font-black uppercase tracking-wider ${isDarkMode ? 'text-white/70' : 'text-black/70'}`}>{label}</span>
     </button>
   );
 }
@@ -319,7 +319,7 @@ function PanelsContainer() {
   const { activePanel, diameter, height, setDimensions, topCap, bottomCap, setCaps, plasticColor, setPlasticColor, isDarkMode, tubeColor, setTubeColor, discColor, setDiscColor, studioMode, setStudioMode, lightIntensity, setLightIntensity, spotLightIntensity, setSpotLightIntensity, envIntensity, setEnvIntensity, userDesign, designHeight } = useTubeStore() as any;
   if (activePanel === 'NONE' || activePanel === 'ADMIN') return null;
 
-  const selectClass = `w-full rounded-xl p-3 text-xs outline-none border transition-all ${isDarkMode ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-gray-50 text-black border-black/10'}`;
+  const selectClass = `w-full rounded-xl p-4 md:p-3 text-sm md:text-xs outline-none border transition-all ${isDarkMode ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-gray-50 text-black border-black/10'}`;
   const maxH = (topCap === 'BORDON' || bottomCap === 'BORDON' || bottomCap === 'SELLADO' || topCap === 'BORDON_DISCO') ? 300 : 600;
 
   return (
@@ -390,9 +390,9 @@ function PanelsContainer() {
               <span className="text-[9px] text-[#008234] uppercase font-bold">
                 {topCap.includes('TERMO') && !topCap.includes('PLASTICO') ? 'Color Tapa Termo:' : 'Color Tapas Plástico:'}
               </span>
-              <div className="flex gap-3">
-                <button onClick={() => setPlasticColor('BLACK')} className={`w-6 h-6 rounded-full border-2 transition-all ${plasticColor === 'BLACK' ? 'border-[#008234] scale-125' : 'border-transparent'} bg-black shadow-md`} />
-                <button onClick={() => setPlasticColor('WHITE')} className={`w-6 h-6 rounded-full border-2 transition-all ${plasticColor === 'WHITE' ? 'border-[#008234] scale-125' : 'border-transparent'} bg-white shadow-md`} />
+              <div className="flex gap-4">
+                <button onClick={() => setPlasticColor('BLACK')} className={`w-8 h-8 rounded-full border-2 transition-all ${plasticColor === 'BLACK' ? 'border-[#008234] scale-125' : 'border-transparent'} bg-black shadow-md`} />
+                <button onClick={() => setPlasticColor('WHITE')} className={`w-8 h-8 rounded-full border-2 transition-all ${plasticColor === 'WHITE' ? 'border-[#008234] scale-125' : 'border-transparent'} bg-white shadow-md`} />
               </div>
             </div>
           )}
