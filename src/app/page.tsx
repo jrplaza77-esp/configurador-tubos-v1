@@ -18,11 +18,17 @@ export default function ArplastApp() {
   } = useTubeStore() as any;
 
   const handleCapturePhoto = () => {
+    const defaultName = `Foto_Arplast_${Date.now()}`;
+    const filename = window.prompt("Introduce un nombre para la foto:", defaultName);
+    if (!filename) return;
+
     const canvas = document.querySelector('canvas');
     if (!canvas) {
       alert("No se pudo capturar la imagen. Asegúrate de que el modelo 3D esté visible.");
       return;
     }
+    const video = document.querySelector('video');
+
     const imgData = canvas.toDataURL('image/png');
     const img = new window.Image();
     img.src = imgData;
@@ -38,6 +44,27 @@ export default function ArplastApp() {
       // Fondo blanco en lugar de transparente para PDF/PNG limpios
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, width, img.height + textHeight);
+
+      // Si el modo AR está activo, dibujamos el video de fondo primero
+      if (arMode && video && video.readyState >= 2) { // HAVE_CURRENT_DATA or more
+        const videoRatio = video.videoWidth / video.videoHeight;
+        const canvasRatio = width / img.height;
+        let drawWidth = width;
+        let drawHeight = img.height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (videoRatio > canvasRatio) {
+            drawWidth = img.height * videoRatio;
+            offsetX = (width - drawWidth) / 2;
+        } else {
+            drawHeight = width / videoRatio;
+            offsetY = (img.height - drawHeight) / 2;
+        }
+        
+        ctx.drawImage(video, offsetX, offsetY, drawWidth, drawHeight);
+      }
+
       ctx.drawImage(img, 0, 0);
       
       // Fondo gris claro para el resumen
@@ -57,7 +84,7 @@ export default function ArplastApp() {
       ctx.fillText(text2, width / 2, img.height + 95);
       
       const link = document.createElement('a');
-      link.download = `Vista_Arplast_${Date.now()}.png`;
+      link.download = `${filename}.png`;
       link.href = newCanvas.toDataURL('image/png');
       link.click();
     };
@@ -70,6 +97,7 @@ export default function ArplastApp() {
 
     const state = useTubeStore.getState() as any;
     const stateToSave = {
+      type: state.type,
       diameter: state.diameter,
       height: state.height,
       topCap: state.topCap,
@@ -79,6 +107,10 @@ export default function ArplastApp() {
       userDesignDisc: state.userDesignDisc,
       tubeColor: state.tubeColor,
       discColor: state.discColor,
+      studioMode: state.studioMode,
+      lightIntensity: state.lightIntensity,
+      spotLightIntensity: state.spotLightIntensity,
+      envIntensity: state.envIntensity
     };
     
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stateToSave, null, 2));
@@ -359,7 +391,11 @@ function PanelsContainer() {
               <span className={isDarkMode ? 'text-white/40' : 'text-black/40'}>ALTURA TOTAL</span>
               <span className="text-[#008234]">{height} mm</span>
             </div>
-            <input type="range" min="25" max={maxH} value={height} onChange={(e) => setDimensions(diameter, Number(e.target.value))} className="accent-[#008234] cursor-pointer w-full" />
+            <div className="flex items-center gap-3">
+               <button onClick={() => setDimensions(diameter, Math.max(25, height - 1))} className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border transition-all active:scale-95 text-lg font-bold ${isDarkMode ? 'bg-white/5 border-white/10 hover:bg-white/10 text-white' : 'bg-black/5 border-black/10 hover:bg-black/10 text-black'}`}>-</button>
+               <input type="range" min="25" max={maxH} value={height} onChange={(e) => setDimensions(diameter, Number(e.target.value))} className="accent-[#008234] cursor-pointer w-full" />
+               <button onClick={() => setDimensions(diameter, Math.min(maxH, height + 1))} className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border transition-all active:scale-95 text-lg font-bold ${isDarkMode ? 'bg-white/5 border-white/10 hover:bg-white/10 text-white' : 'bg-black/5 border-black/10 hover:bg-black/10 text-black'}`}>+</button>
+            </div>
             <div className="flex justify-between text-[7px] opacity-30 font-bold px-1">
               <span>MIN 25mm</span>
               <span>MAX {maxH}mm</span>
@@ -486,9 +522,12 @@ function ARCameraBackground() {
   const [error, setError] = useState(false);
   
   useEffect(() => {
+    let currentStream: MediaStream | null = null;
+    
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(stream => {
+          currentStream = stream;
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             videoRef.current.play().catch(() => {});
@@ -503,8 +542,8 @@ function ARCameraBackground() {
     }
 
     return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        if (currentStream) {
+            const tracks = currentStream.getTracks();
             tracks.forEach(track => track.stop());
         }
     };
