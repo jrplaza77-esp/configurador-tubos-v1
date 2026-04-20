@@ -118,13 +118,15 @@ export default function ArplastApp() {
     return names[t] || t;
   };
 
+  const isPanelOpen = activePanel !== 'NONE' && activePanel !== 'ADMIN';
+
   return (
     // 3. CONTENEDOR PRINCIPAL
     <main className={`flex flex-col landscape:flex-row md:flex-row w-full h-[100dvh] overflow-hidden transition-colors duration-500 font-sans 
       ${isDarkMode ? 'bg-[#050505] text-white' : 'bg-[#F2F2F2] text-black'}`}>
 
       {/* 4. VISOR 3D (ARRIBA EN MÓVIL, 70% IZQ EN PC) */}
-      <div className="relative w-full h-[45dvh] landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[70%] md:w-[70%] flex-shrink-0 flex items-center justify-center border-b landscape:border-b-0 landscape:border-r md:border-b-0 md:border-r border-black/10 dark:border-white/10">
+      <div className={`relative w-full ${isPanelOpen ? 'h-[45dvh]' : 'flex-1 h-[auto]'} landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[70%] md:w-[70%] flex-shrink-0 flex items-center justify-center border-b landscape:border-b-0 landscape:border-r md:border-b-0 md:border-r border-black/10 dark:border-white/10 transition-all duration-300`}>
         
         {/* LOGO Y DATOS FLOTANTES */}
         <div className="absolute top-6 left-6 z-20 flex flex-col items-start pointer-events-none">
@@ -188,7 +190,7 @@ export default function ArplastApp() {
       </div>
 
       {/* 8. PANEL DE CONFIGURACIÓN (ABAJO EN MÓVIL, 30% DER EN PC) */}
-      <div className={`w-full h-[55dvh] landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[30%] md:w-[30%] flex flex-col shadow-2xl z-50 transition-colors
+      <div className={`w-full ${isPanelOpen ? 'h-[55dvh]' : 'h-auto max-h-[100dvh]'} landscape:h-[100dvh] md:h-[100dvh] landscape:w-[50%] landscape:md:w-[30%] md:w-[30%] flex flex-col shadow-2xl z-[90] transition-all duration-300
         ${isDarkMode ? 'bg-[#121212]' : 'bg-white'}`}>
         
         {/* ÁREA DE PANELES SCROLLABLE */}
@@ -197,36 +199,40 @@ export default function ArplastApp() {
         </div>
 
         {/* 9. DOCK BAR (SIEMPRE VISIBLE AL FONDO O ARRIBA DEL PANEL) */}
-        <div className={`flex justify-around items-center p-3 sm:p-4 border-t flex-shrink-0 transition-colors
-          ${isDarkMode ? 'border-white/10 bg-[#0A0A0A]' : 'border-black/5 bg-gray-50'}`}>
-           <DockButton active={activePanel === 'MEDIDAS'} onClick={() => setActivePanel('MEDIDAS')} icon={<Ruler size={24} />} label="Medidas" isDarkMode={isDarkMode} />
-           <DockButton active={activePanel === 'PIEZAS'} onClick={() => setActivePanel('PIEZAS')} icon={<Settings size={24} />} label="Piezas" isDarkMode={isDarkMode} />
-           <DockButton active={activePanel === 'COLORES'} onClick={() => setActivePanel('COLORES')} icon={<Palette size={24} />} label="Colores" isDarkMode={isDarkMode} />
+        <div className={`flex justify-start sm:justify-around items-center p-3 sm:p-4 border-t flex-shrink-0 transition-colors overflow-x-auto gap-6 sm:gap-2 [&::-webkit-scrollbar]:hidden
+          ${isDarkMode ? 'border-white/10 bg-[#0A0A0A]' : 'border-black/5 bg-gray-50'}`} style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+           <DockButton active={activePanel === 'MEDIDAS'} onClick={() => activePanel === 'MEDIDAS' ? setActivePanel('NONE') : setActivePanel('MEDIDAS')} icon={<Ruler />} label="Medidas" isDarkMode={isDarkMode} />
+           <DockButton active={activePanel === 'PIEZAS'} onClick={() => activePanel === 'PIEZAS' ? setActivePanel('NONE') : setActivePanel('PIEZAS')} icon={<Settings />} label="Piezas" isDarkMode={isDarkMode} />
+           <DockButton active={activePanel === 'COLORES'} onClick={() => activePanel === 'COLORES' ? setActivePanel('NONE') : setActivePanel('COLORES')} icon={<Palette />} label="Colores" isDarkMode={isDarkMode} />
            
-           <div className={`w-px h-6 mx-1 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
+           <div className={`w-px h-6 mx-1 flex-shrink-0 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
            
-           <button onClick={() => setIsDesignOpen(true)} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
-             <div className={`w-7 h-7 border-2 rounded-sm flex items-center justify-center text-[10px] font-black italic transition-colors
+           <button onClick={() => setIsDesignOpen(true)} className="flex flex-col flex-shrink-0 items-center gap-1.5 p-1 transition-all group">
+             <div className={`w-6 h-6 sm:w-7 sm:h-7 border-2 rounded-sm flex items-center justify-center text-[9px] sm:text-[10px] font-black italic transition-colors
                ${isDarkMode ? 'border-white/40 text-white/40 group-hover:text-green-500 group-hover:border-green-500' : 'border-black/40 text-black/40 group-hover:text-green-600 group-hover:border-green-600'}`}>
                ART
              </div>
-             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Diseño</span>
+             <span className={`text-[7px] sm:text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Diseño</span>
            </button>
 
-           <button onClick={toggleDarkMode} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
+           <button onClick={toggleDarkMode} className="flex flex-col flex-shrink-0 items-center gap-1.5 p-1 transition-all group">
              <div className={isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 group-hover:text-black'}>
-               {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+               <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+                 {isDarkMode ? <Sun className="w-full h-full" /> : <Moon className="w-full h-full" />}
+               </div>
              </div>
-             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Luz</span>
+             <span className={`text-[7px] sm:text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Luz</span>
            </button>
 
            <button onClick={() => {
-             setActivePanel('ESTUDIO');
-           }} className="flex flex-col items-center gap-1.5 p-1 transition-all group">
+             activePanel === 'ESTUDIO' ? setActivePanel('NONE') : setActivePanel('ESTUDIO');
+           }} className="flex flex-col flex-shrink-0 items-center gap-1.5 p-1 transition-all group">
              <div className={activePanel === 'ESTUDIO' || studioMode ? 'text-green-500' : (isDarkMode ? 'text-zinc-600 group-hover:text-white' : 'text-zinc-400 group-hover:text-black')}>
-               <Sparkles size={24} />
+               <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+                 <Sparkles className="w-full h-full" />
+               </div>
              </div>
-             <span className={`text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Estudio</span>
+             <span className={`text-[7px] sm:text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Estudio</span>
            </button>
         </div>
       </div>
@@ -284,9 +290,11 @@ function ViewButton({ label, icon, view, isRed, disabled, isDarkMode, active, on
 
 function DockButton({ active, onClick, icon, label, isDarkMode }: any) {
   return (
-    <button onClick={onClick} className={`flex flex-col items-center gap-1.5 p-1 transition-all ${active ? 'text-[#008234]' : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}>
-      {icon}
-      <span className="text-[8px] uppercase font-black tracking-widest">{label}</span>
+    <button onClick={onClick} className={`flex flex-col flex-shrink-0 items-center gap-1.5 p-1 transition-all ${active ? 'text-[#008234]' : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}>
+      <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+        {React.cloneElement(icon, { className: "w-full h-full" })}
+      </div>
+      <span className="text-[7px] sm:text-[8px] uppercase font-black tracking-widest">{label}</span>
     </button>
   );
 }
