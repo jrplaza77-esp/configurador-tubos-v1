@@ -137,11 +137,59 @@ export default function ArplastApp() {
     e.target.value = '';
   };
 
-  // 2. CONTROL DE MONTAJE (EVITA ERRORES DE CARGA EN EL NAVEGADOR)
+  // 2. CONTROL DE MONTAJE Y ACCESO PRIVADO
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [authError, setAuthError] = useState(false);
+
+  useEffect(() => { 
+    setMounted(true); 
+    if (sessionStorage.getItem('arplast_auth') === '746200') {
+        setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passcode === '746200') {
+      sessionStorage.setItem('arplast_auth', '746200');
+      setIsAuthenticated(true);
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
 
   if (!mounted) return <div className="bg-[#050505] h-screen" />;
+
+  if (!isAuthenticated) {
+    return (
+      <main className="flex flex-col items-center justify-center w-full h-[100dvh] bg-[#050505] text-white font-sans overflow-hidden px-6">
+        <div className="w-full max-w-xs flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="bg-white p-4 rounded-xl mb-8 shadow-2xl">
+                <img src="/logo.png" alt="Arplast" className="h-6 w-auto object-contain" />
+            </div>
+            <h1 className="text-sm font-black uppercase tracking-widest mb-1 text-center text-white/90">Acceso Privado</h1>
+            <p className="text-[9px] uppercase font-bold text-[#008234] tracking-widest mb-8 text-center">Configurador 3D Profesional</p>
+            
+            <form onSubmit={handleLogin} className="w-full flex flex-col items-center gap-4">
+              <input 
+                type="password" 
+                placeholder="CÓDIGO DE ACCESO"
+                value={passcode}
+                onChange={(e) => { setPasscode(e.target.value); setAuthError(false); }}
+                className={`w-full bg-[#0A0A0A] border ${authError ? 'border-red-500 focus:border-red-400' : 'border-white/10 focus:border-[#008234]'} rounded-xl px-4 py-4 text-center text-white outline-none tracking-widest text-xs font-bold transition-all shadow-inner placeholder-white/20`}
+              />
+              {authError && <span className="text-red-500 text-[9px] font-bold uppercase tracking-widest mt-[-4px]">Código incorrecto</span>}
+              <button type="submit" className="w-full bg-[#008234] hover:bg-[#00D154] text-white rounded-xl px-6 py-4 uppercase font-black text-[10px] tracking-widest transition-all shadow-xl active:scale-95">
+                Ingresar al Sistema
+              </button>
+            </form>
+        </div>
+      </main>
+    );
+  }
 
   const formatFriendlyType = (t: string) => {
     const names: Record<string, string> = {

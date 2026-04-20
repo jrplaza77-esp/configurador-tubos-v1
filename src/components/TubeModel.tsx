@@ -528,7 +528,8 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
     useEffect(() => {
         if (!discTexMap || !discTexMap.image) return;
         
-        const aspect = discTexMap.image.width / discTexMap.image.height;
+        const image = discTexMap.image as any;
+        const aspect = image.width / image.height;
         let baseRepeatX = 1;
         let baseRepeatY = 1;
 
