@@ -485,22 +485,37 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
     }), [isSectionActive]);
 
     const [textureMap, setTextureMap] = useState<THREE.Texture | null>(null);
+    const { designMode, designScale, designOffsetX, designOffsetY } = useTubeStore() as any;
+
     useEffect(() => {
         if (!userDesign) { setTextureMap(null); return; }
         new THREE.TextureLoader().load(userDesign, (tex) => {
             tex.colorSpace = THREE.SRGBColorSpace;
-            const D_store = Number(storeDiameter || 60);
-            const circ = (D_store + 3.34) * Math.PI;
-            const totalW = circ + 9.0; // 9 = solape derecho
-            tex.repeat.set(circ / totalW, 1);
-            tex.offset.set(0, 0);
             tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
             setTextureMap(tex);
         });
-    }, [userDesign, storeDiameter]);
+    }, [userDesign]);
 
-    const { userDesignDisc } = useTubeStore() as any;
+    useEffect(() => {
+        if (!textureMap) return;
+        const D_store = Number(storeDiameter || 60);
+        const circ = (D_store + 3.34) * Math.PI;
+        const totalW = circ + 9.0;
+        
+        if (designMode === 'AUTO') {
+            textureMap.repeat.set(circ / totalW, 1);
+            textureMap.offset.set(0, 0);
+        } else {
+            textureMap.repeat.set((circ / totalW) / designScale, 1 / designScale);
+            textureMap.offset.set(designOffsetX, designOffsetY);
+        }
+        textureMap.needsUpdate = true;
+    }, [textureMap, storeDiameter, designMode, designScale, designOffsetX, designOffsetY]);
+
+    const { userDesignDisc, designDiscMode, designDiscScale, designDiscOffsetX, designDiscOffsetY } = useTubeStore() as any;
     const [discTexMap, setDiscTexMap] = useState<THREE.Texture | null>(null);
+
     useEffect(() => {
         if (!userDesignDisc) { setDiscTexMap(null); return; }
         new THREE.TextureLoader().load(userDesignDisc, (tex) => {
@@ -509,6 +524,29 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
             setDiscTexMap(tex);
         });
     }, [userDesignDisc]);
+
+    useEffect(() => {
+        if (!discTexMap || !discTexMap.image) return;
+        
+        const aspect = discTexMap.image.width / discTexMap.image.height;
+        let baseRepeatX = 1;
+        let baseRepeatY = 1;
+
+        if (aspect > 1) {
+            baseRepeatX = 1 / aspect;
+        } else {
+            baseRepeatY = aspect; 
+        }
+
+        if (designDiscMode === 'AUTO') {
+            discTexMap.repeat.set(baseRepeatX, baseRepeatY);
+            discTexMap.offset.set((1 - baseRepeatX) / 2, (1 - baseRepeatY) / 2);
+        } else {
+            discTexMap.repeat.set(baseRepeatX / designDiscScale, baseRepeatY / designDiscScale);
+            discTexMap.offset.set(((1 - (baseRepeatX / designDiscScale)) / 2) - designDiscOffsetX, ((1 - (baseRepeatY / designDiscScale)) / 2) - designDiscOffsetY);
+        }
+        discTexMap.needsUpdate = true;
+    }, [discTexMap, designDiscMode, designDiscScale, designDiscOffsetX, designDiscOffsetY]);
 
     const sectionCutsGeo = useMemo(() => {
         if (!isSectionActive || !tubeData?.pts?.length) return null;

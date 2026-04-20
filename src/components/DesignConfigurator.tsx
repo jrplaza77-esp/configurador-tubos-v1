@@ -5,8 +5,20 @@ import { X, Upload, Trash2, Download, Circle } from 'lucide-react';
 import { MEDIDAS_BASE } from '@/config/tubesConfig';
 
 export default function DesignConfigurator() {
-    const { isDesignOpen, setIsDesignOpen, diameter, height, topCap, bottomCap, setUserDesign, userDesign, setUserDesignDisc, userDesignDisc } = useTubeStore() as any;
+    const { 
+        isDesignOpen, setIsDesignOpen, diameter, height, topCap, bottomCap, 
+        setUserDesign, userDesign, setUserDesignDisc, userDesignDisc,
+        designMode, setDesignMode, designScale, setDesignScale, 
+        designOffsetX, setDesignOffsetX, designOffsetY, setDesignOffsetY,
+        designDiscMode, setDesignDiscMode, designDiscScale, setDesignDiscScale, 
+        designDiscOffsetX, setDesignDiscOffsetX, designDiscOffsetY, setDesignDiscOffsetY
+    } = useTubeStore() as any;
     const [isDiscTemplate, setIsDiscTemplate] = useState(false);
+
+    const currentMode = isDiscTemplate ? designDiscMode : designMode;
+    const currentScale = isDiscTemplate ? designDiscScale : designScale;
+    const currentOffsetX = isDiscTemplate ? designDiscOffsetX : designOffsetX;
+    const currentOffsetY = isDiscTemplate ? designDiscOffsetY : designOffsetY;
 
     if (!isDesignOpen) return null;
 
@@ -189,16 +201,58 @@ export default function DesignConfigurator() {
                 )}
             </div>
 
-            {/* FOOTER */}
-            <div className="p-8 flex justify-center gap-4 bg-black/90 backdrop-blur-xl border-t border-white/10">
-                <label className="bg-green-600 hover:bg-green-500 text-white px-12 py-4 rounded-full font-bold uppercase text-xs cursor-pointer transition-all flex items-center gap-3 shadow-xl">
-                    <Upload size={18} /> Subir Arte Final {isDiscTemplate ? 'Disco' : 'Tubo'}
-                    <input type="file" hidden onChange={handleImage} accept="image/*" />
-                </label>
+            {/* FOOTER - ZONA DE CARGA Y EDICIÓN MODO MANUAL */}
+            <div className="p-6 md:p-8 flex flex-col items-center gap-6 bg-black/90 backdrop-blur-xl border-t border-white/10 w-full relative z-[110]">
+                
+                {/* 1. SECCIÓN PRINCIPAL: BOTONES DE CARGA Y ELIMINAR */}
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
+                    <label className="bg-green-600 hover:bg-green-500 text-white px-10 py-3.5 rounded-full font-bold uppercase text-xs cursor-pointer transition-all flex items-center justify-center gap-3 shadow-xl w-full md:w-auto">
+                        <Upload size={18} /> Subir Arte Final {isDiscTemplate ? 'Disco' : 'Tubo'}
+                        <input type="file" hidden onChange={handleImage} accept="image/jpeg, image/png, .jpg, .png, .jpeg" />
+                    </label>
+                    {currentDesign && (
+                        <button onClick={() => isDiscTemplate ? setUserDesignDisc(null) : setUserDesign(null)} className="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 px-8 py-3.5 rounded-full font-bold uppercase text-xs transition-all flex items-center justify-center gap-3 w-full md:w-auto">
+                            <Trash2 size={18} /> Eliminar Diseño
+                        </button>
+                    )}
+                </div>
+                
+                <span className="text-[9px] text-white/50 uppercase font-bold tracking-widest text-center mt-[-10px]">
+                    Subir archivos en <strong className="text-white">JPG</strong> ó <strong className="text-white">PNG</strong> para mayor calidad.
+                </span>
+
+                {/* 2. SECCIÓN DE EDICIÓN AVANZADA (MODO MANUAL/AUTO) */}
                 {currentDesign && (
-                    <button onClick={() => isDiscTemplate ? setUserDesignDisc(null) : setUserDesign(null)} className="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 px-10 py-4 rounded-full font-bold uppercase text-xs transition-all flex items-center gap-3">
-                        <Trash2 size={18} /> Eliminar
-                    </button>
+                    <div className="w-full max-w-3xl flex flex-col items-center gap-4 border-t border-white/10 pt-4">
+                        
+                        <div className="flex bg-white/5 border border-white/10 rounded-lg p-1">
+                            <button onClick={() => isDiscTemplate ? setDesignDiscMode('AUTO') : setDesignMode('AUTO')} className={`px-5 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${currentMode === 'AUTO' ? 'bg-white text-black shadow-md' : 'text-white/50 hover:text-white'}`}>Ajuste Automático</button>
+                            <button onClick={() => isDiscTemplate ? setDesignDiscMode('MANUAL') : setDesignMode('MANUAL')} className={`px-5 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${currentMode === 'MANUAL' ? 'bg-white text-black shadow-md' : 'text-white/50 hover:text-white'}`}>Transformación Manual</button>
+                        </div>
+
+                        {currentMode === 'MANUAL' && (
+                            <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center text-xs text-white/80 animate-in fade-in slide-in-from-bottom-2">
+                                <div className="flex flex-col w-full">
+                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                        <span>Escala</span> <span className="text-green-400">x{currentScale.toFixed(2)}</span>
+                                    </div>
+                                    <input type="range" min="0.1" max="5" step="0.01" value={currentScale} onChange={(e) => isDiscTemplate ? setDesignDiscScale(Number(e.target.value)) : setDesignScale(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                        <span>Desfase H (Offset X)</span> <span className="text-green-400">{currentOffsetX.toFixed(2)}</span>
+                                    </div>
+                                    <input type="range" min="-1" max="1" step="0.01" value={currentOffsetX} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetX(Number(e.target.value)) : setDesignOffsetX(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                        <span>Desfase V (Offset Y)</span> <span className="text-green-400">{currentOffsetY.toFixed(2)}</span>
+                                    </div>
+                                    <input type="range" min="-1" max="1" step="0.01" value={currentOffsetY} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetY(Number(e.target.value)) : setDesignOffsetY(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

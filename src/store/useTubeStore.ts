@@ -25,6 +25,16 @@ interface TubeState {
     spotLightIntensity: number;
     envIntensity: number;
 
+    designMode: 'AUTO' | 'MANUAL';
+    designScale: number;
+    designOffsetX: number;
+    designOffsetY: number;
+    
+    designDiscMode: 'AUTO' | 'MANUAL';
+    designDiscScale: number;
+    designDiscOffsetX: number;
+    designDiscOffsetY: number;
+
     setDimensions: (d: string, h: number) => void;
     setCaps: (top: string, bottom: string) => void;
     setPlasticColor: (color: string) => void;
@@ -46,6 +56,16 @@ interface TubeState {
     setLightIntensity: (val: number) => void;
     setSpotLightIntensity: (val: number) => void;
     setEnvIntensity: (val: number) => void;
+
+    setDesignMode: (mode: 'AUTO' | 'MANUAL') => void;
+    setDesignScale: (val: number) => void;
+    setDesignOffsetX: (val: number) => void;
+    setDesignOffsetY: (val: number) => void;
+
+    setDesignDiscMode: (mode: 'AUTO' | 'MANUAL') => void;
+    setDesignDiscScale: (val: number) => void;
+    setDesignDiscOffsetX: (val: number) => void;
+    setDesignDiscOffsetY: (val: number) => void;
 }
 
 export const useTubeStore = create<TubeState>((set) => ({
@@ -72,6 +92,16 @@ export const useTubeStore = create<TubeState>((set) => ({
     spotLightIntensity: 1.2,
     envIntensity: 0.3,
 
+    designMode: 'AUTO',
+    designScale: 1,
+    designOffsetX: 0,
+    designOffsetY: 0,
+    
+    designDiscMode: 'AUTO',
+    designDiscScale: 1,
+    designDiscOffsetX: 0,
+    designDiscOffsetY: 0,
+
     setActivePanel: (panel) => set({ activePanel: panel }),
     setSectionActive: (val) => set({ isSectionActive: val }),
     setPlasticColor: (color) => set({ plasticColor: color }),
@@ -87,6 +117,16 @@ export const useTubeStore = create<TubeState>((set) => ({
     setLightIntensity: (val) => set({ lightIntensity: val }),
     setSpotLightIntensity: (val) => set({ spotLightIntensity: val }),
     setEnvIntensity: (val) => set({ envIntensity: val }),
+
+    setDesignMode: (mode) => set({ designMode: mode }),
+    setDesignScale: (val) => set({ designScale: val }),
+    setDesignOffsetX: (val) => set({ designOffsetX: val }),
+    setDesignOffsetY: (val) => set({ designOffsetY: val }),
+
+    setDesignDiscMode: (mode) => set({ designDiscMode: mode }),
+    setDesignDiscScale: (val) => set({ designDiscScale: val }),
+    setDesignDiscOffsetX: (val) => set({ designDiscOffsetX: val }),
+    setDesignDiscOffsetY: (val) => set({ designDiscOffsetY: val }),
 
     setDimensions: (d, h) => set((state) => {
         let top = state.topCap;

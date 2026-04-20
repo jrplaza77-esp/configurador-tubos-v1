@@ -194,7 +194,7 @@ export default function ArplastApp() {
              <ViewButton label="GUARDAR" icon={<Save />} onClick={handleSaveProject} isDarkMode={isDarkMode} isTop />
           </div>
           <div className="relative flex-shrink-0 pointer-events-auto">
-            <input type="file" accept=".json" style={{ display: 'none' }} id="project-upload" onChange={handleOpenProject} />
+            <input type="file" accept="application/json,.json" style={{ display: 'none' }} id="project-upload" onChange={handleOpenProject} />
             <ViewButton label="ABRIR" icon={<FolderOpen />} onClick={() => document.getElementById('project-upload')?.click()} isDarkMode={isDarkMode} isTop />
           </div>
 
