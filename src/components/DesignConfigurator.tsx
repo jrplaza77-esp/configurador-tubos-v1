@@ -137,7 +137,7 @@ export default function DesignConfigurator() {
                     <div className="relative shadow-2xl bg-[#856a4d] flex items-center justify-center border-2 border-white/20 rounded-full overflow-hidden"
                         style={{
                             width: 'min(90vw, 60vh)',
-                            height: 'min(90vw, 60vh)'
+                            aspectRatio: '1 / 1'
                         }}
                     >
                         {currentDesign && <img src={currentDesign} className="absolute inset-0 w-full h-full object-cover" />}
@@ -206,13 +206,13 @@ export default function DesignConfigurator() {
                 
                 {/* 1. SECCIÓN PRINCIPAL: BOTONES DE CARGA Y ELIMINAR */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
-                    <label className="bg-green-600 hover:bg-green-500 text-white px-10 py-3.5 rounded-full font-bold uppercase text-xs cursor-pointer transition-all flex items-center justify-center gap-3 shadow-xl w-full md:w-auto">
-                        <Upload size={18} /> Subir Arte Final {isDiscTemplate ? 'Disco' : 'Tubo'}
+                    <label className="bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 md:px-10 md:py-3.5 rounded-full font-bold uppercase text-[10px] md:text-xs cursor-pointer transition-all flex items-center justify-center gap-2 shadow-xl w-auto">
+                        <Upload size={16} className="md:w-[18px] md:h-[18px]" /> Subir Arte Final {isDiscTemplate ? 'Disco' : 'Tubo'}
                         <input type="file" hidden onChange={handleImage} accept="image/jpeg, image/png, .jpg, .png, .jpeg" />
                     </label>
                     {currentDesign && (
-                        <button onClick={() => isDiscTemplate ? setUserDesignDisc(null) : setUserDesign(null)} className="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 px-8 py-3.5 rounded-full font-bold uppercase text-xs transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                            <Trash2 size={18} /> Eliminar Diseño
+                        <button onClick={() => isDiscTemplate ? setUserDesignDisc(null) : setUserDesign(null)} className="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 px-6 py-2.5 md:px-8 md:py-3.5 rounded-full font-bold uppercase text-[10px] md:text-xs transition-all flex items-center justify-center gap-2 w-auto">
+                            <Trash2 size={16} className="md:w-[18px] md:h-[18px]" /> Eliminar Diseño
                         </button>
                     )}
                 </div>

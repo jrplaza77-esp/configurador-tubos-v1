@@ -104,7 +104,7 @@ const getCapUrl = (D: string, type: string) => {
 };
 
 // --- 📦 COMPONENTE: CARGADOR DE TAPAS ---
-function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBottom, customTex }: any) {
+function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBottom, customTex, kraftTex }: any) {
     const { scene } = useGLTF(url) as any;
     const isCorcho = url.includes('corcho');
 
@@ -130,19 +130,24 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 
         clone.traverse((child: any) => {
             if (child.isMesh) {
+                const isKraft = isDisco && capColor === '#C5A16F';
+                const activeTex = (customTex && isDisco) ? customTex : (isCorcho ? corkTex : (isKraft ? kraftTex : null));
+                const parsedHex = new THREE.Color(capColor === '#C5A16F' ? '#856a4d' : (capColor || '#111111'));
+                
                 const mat = new THREE.MeshStandardMaterial({
-                    color: (customTex && isDisco) || isCorcho ? '#FFFFFF' : (isMetal ? '#E6E8EA' : (capColor || '#111111')), // Un gris muy clarito/blanco crudo para reflejar mejor
-                    metalness: isCorcho ? 0.0 : (isMetal ? 0.95 : 0.1), // Niquelado mucho más reflectante
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.15 : 0.4), // Muy pulido o mate (corcho)
-                    envMapIntensity: isMetal ? 1.5 : 1.0, // Resalta los reflejos del entorno
+                    color: activeTex ? '#FFFFFF' : (isMetal ? '#E6E8EA' : parsedHex),
+                    metalness: isCorcho ? 0.0 : (isMetal ? 0.95 : 0.1),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.15 : (isKraft ? 0.9 : 0.4)),
+                    envMapIntensity: isMetal ? 1.5 : 1.0,
                     side: THREE.DoubleSide,
-                    map: (customTex && isDisco) ? customTex : (isCorcho ? corkTex : null)
+                    map: activeTex
                 });
 
-                // Inyección GLSL: Forzar color BLANCO en la cara interior (basado en NORMAL GLOBAL MUNDIAL)
+                // Inyección GLSL: Forzar color BASE en la cara interior (basado en NORMAL GLOBAL MUNDIAL)
                 if (isDisco && customTex) {
                     mat.onBeforeCompile = (shader) => {
                         shader.uniforms.uIsBottom = { value: isBottom ? 1.0 : 0.0 };
+                        shader.uniforms.uBaseColor = { value: parsedHex };
                         shader.vertexShader = shader.vertexShader.replace(
                             '#include <common>',
                             `#include <common>
@@ -157,30 +162,31 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                             '#include <common>',
                             `#include <common>
                              uniform float uIsBottom;
+                             uniform vec3 uBaseColor;
                              varying vec3 vWorldNormalCustom;`
                         ).replace(
                             '#include <color_fragment>',
                             `#include <color_fragment>
                              if (uIsBottom > 0.5) {
-                                 // Tapa inferior: solo dibujamos la textura en la cara estrictamente inferior (World Y < -0.1). El resto (interior y borde/canto) blanco.
-                                 if (vWorldNormalCustom.y > -0.1 || !gl_FrontFacing) {
-                                     diffuseColor.rgb = vec3(1.0, 1.0, 1.0);
+                                 // Tapa inferior: mostrar textura en el fondo exterior (World Y < -0.5)
+                                 if (vWorldNormalCustom.y > -0.5) {
+                                     diffuseColor.rgb = uBaseColor;
                                  }
                              } else {
-                                 // Tapa superior: solo dibujamos la textura en la cara estrictamente superior (World Y > 0.1). El resto (interior y borde/canto) blanco.
-                                 if (vWorldNormalCustom.y < 0.1 || !gl_FrontFacing) {
-                                     diffuseColor.rgb = vec3(1.0, 1.0, 1.0);
+                                 // Tapa superior: mostrar textura en la parte alta (World Y > 0.5)
+                                 if (vWorldNormalCustom.y < 0.5) {
+                                     diffuseColor.rgb = uBaseColor;
                                  }
                              }`
                         ).replace(
                             '#include <emissivemap_fragment>',
                             `#include <emissivemap_fragment>
                              if (uIsBottom > 0.5) {
-                                 if (vWorldNormalCustom.y > 0.5 || !gl_FrontFacing) {
+                                 if (vWorldNormalCustom.y > -0.5) {
                                      totalEmissiveRadiance = diffuseColor.rgb * 0.15;
                                  }
                              } else {
-                                 if (vWorldNormalCustom.y < -0.5 || !gl_FrontFacing) {
+                                 if (vWorldNormalCustom.y < 0.5) {
                                      totalEmissiveRadiance = diffuseColor.rgb * 0.15;
                                  }
                              }`
@@ -329,7 +335,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
         group.add(clone);
         return group;
         // 3. ¡IMPORTANTE! Añade capColor, customTex, isCorcho y corkTex a las dependencias
-    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex]);
+    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex, kraftTex, isBottom]);
 
     const rad = (d: number) => d * (Math.PI / 180);
     return (
@@ -595,7 +601,7 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                 <ExplodableGroup isExploded={isExploded} explodeOffset={30 * SC} basePos={[0, (height / 2) * SC, 0]}>
                     {topCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} />}
                     {topCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} capColor={capHex} />}
-                    {topCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} capColor={discColor} customTex={discTexMap} />}
+                    {topCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} capColor={discColor} customTex={discTexMap} kraftTex={kraftTex} />}
                     {topCap === 'CORCHO' && <LegoPiece url={getCapUrl(D, 'tapa_corcho')} targetDiam={D_num} adj={AJUSTE[D]?.CORCHO || AJUSTE['60'].CORCHO} pos={[0, 0, 0]} capColor="#D2A679" />}
                     {topCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} />}
                 </ExplodableGroup>
@@ -603,8 +609,8 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                 <ExplodableGroup isExploded={isExploded} explodeOffset={-30 * SC} basePos={[0, -(height / 2) * SC, 0]}>
                     {bottomCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} />}
                     {bottomCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={capHex} isBottom={true} />}
-                    {bottomCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={discColor} isBottom={true} customTex={discTexMap} />}
-                    {bottomCap === 'SELLADO' && <LegoPiece url={getCapUrl(D, 'fondo_sel')} targetDiam={D_num} adj={AJUSTE[D]?.SELLADO || AJUSTE['60'].SELLADO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} customTex={discTexMap} />}
+                    {bottomCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={discColor} isBottom={true} customTex={discTexMap} kraftTex={kraftTex} />}
+                    {bottomCap === 'SELLADO' && <LegoPiece url={getCapUrl(D, 'fondo_sel')} targetDiam={D_num} adj={AJUSTE[D]?.SELLADO || AJUSTE['60'].SELLADO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} customTex={discTexMap} capColor={discColor} kraftTex={kraftTex} />}
                     {bottomCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} />}
                 </ExplodableGroup>
             </Suspense>
