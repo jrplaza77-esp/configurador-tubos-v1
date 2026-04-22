@@ -305,6 +305,14 @@ export default function ArplastApp() {
              <span className={`text-[7px] sm:text-[8px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Diseño</span>
            </button>
 
+           <div className={`w-px h-6 mx-1 flex-shrink-0 ${isDarkMode ? 'bg-white/10' : 'bg-black/10'}`} />
+
+           {/* SELECTOR MODO RENDIMIENTO / REALISMO */}
+           <div className={`flex rounded-lg p-0.5 flex-shrink-0 ${isDarkMode ? 'bg-white/5' : 'bg-black/5'}`}>
+             <button onClick={() => setStudioMode(false)} className={`px-3 py-1.5 text-[8px] font-black uppercase rounded-md transition-all ${!studioMode ? (isDarkMode ? 'bg-zinc-800 text-white shadow-sm' : 'bg-white text-black shadow-sm') : (isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-black/40 hover:text-black/80')}`}>Carga Rápida</button>
+             <button onClick={() => setStudioMode(true)} className={`px-3 py-1.5 text-[8px] font-black uppercase rounded-md transition-all ${studioMode ? 'bg-[#008234] text-white shadow-sm' : (isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-black/40 hover:text-black/80')}`}>Realismo</button>
+           </div>
+
            <button onClick={toggleDarkMode} className="flex flex-col flex-shrink-0 items-center gap-1.5 p-1 transition-all group">
              <div className={isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 group-hover:text-black'}>
                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
@@ -530,7 +538,7 @@ function PanelsContainer() {
       ) : activePanel === 'ESTUDIO' ? (
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between border-b border-black/5 pb-4">
-            <span className="text-[9px] text-[#008234] uppercase font-bold">Suelo Reflectante</span>
+            <span className="text-[9px] text-[#008234] uppercase font-bold">Modo Realismo (HDRI + Suelo PBR)</span>
             <button onClick={() => setStudioMode(!studioMode)} className={`w-10 h-5 rounded-full relative transition-all ${studioMode ? 'bg-[#008234]' : 'bg-gray-300 dark:bg-zinc-700'}`}>
               <div className={`w-4 h-4 rounded-full bg-white absolute top-[2px] transition-all`} style={{ left: studioMode ? '22px' : '2px' }} />
             </button>

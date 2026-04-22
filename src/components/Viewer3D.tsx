@@ -62,8 +62,15 @@ export default function Viewer3D() {
                 <CameraController />
 
                 <ambientLight intensity={lightIntensity} />
-                <spotLight position={[-30, 60, 40]} angle={0.5} penumbra={1} intensity={spotLightIntensity} castShadow />
-                <pointLight position={[20, -10, 10]} intensity={0.1} />
+                <spotLight 
+                    position={[-30, 60, 40]} 
+                    angle={studioMode ? 0.3 : 0.5} 
+                    penumbra={studioMode ? 0.2 : 1} 
+                    intensity={studioMode ? spotLightIntensity * 25 : spotLightIntensity} 
+                    distance={studioMode ? 200 : 0}
+                    castShadow 
+                />
+                <pointLight position={[20, -10, 10]} intensity={studioMode ? 0.5 : 0.1} />
 
                 <Suspense fallback={null}>
                     <Environment preset="studio" environmentIntensity={envIntensity} />
@@ -75,14 +82,17 @@ export default function Viewer3D() {
                             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
                                 <planeGeometry args={[500, 500]} />
                                 <MeshReflectorMaterial
-                                    blur={[300, 100]}
-                                    resolution={1024}
-                                    mixBlur={1}
-                                    mixStrength={isDarkMode ? 30 : 15}
-                                    roughness={0.15}
-                                    color={isDarkMode ? "#000000" : "#ffffff"}
-                                    metalness={isDarkMode ? 1 : 0.1}
-                                    mirror={isDarkMode ? 1 : 0.5}
+                                    blur={studioMode ? [0, 0] : [300, 100]} // Reflejo nítido tipo espejo en Realismo
+                                    resolution={2048}
+                                    mixBlur={0} // Sin difuminar en realismo, reflejo exacto 
+                                    mixStrength={isDarkMode ? 40 : 25}
+                                    roughness={0.0} // PBR puro espejo
+                                    color={isDarkMode ? "#222222" : "#999999"} // Rompemos el negro puro
+                                    metalness={0.5}
+                                    mirror={1}
+                                    depthScale={1}
+                                    minDepthThreshold={0.9}
+                                    maxDepthThreshold={1}
                                 />
                             </mesh>
                             

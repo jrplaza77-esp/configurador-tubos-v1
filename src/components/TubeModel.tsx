@@ -134,17 +134,18 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 const activeTex = (customTex && isDisco) ? customTex : (isCorcho ? corkTex : (isKraft ? kraftTex : null));
                 const parsedHex = new THREE.Color(capColor === '#C5A16F' ? '#856a4d' : (capColor || '#111111'));
                 
-                const mat = new THREE.MeshStandardMaterial({
+                const mat = new THREE.MeshPhysicalMaterial({
                     color: activeTex ? '#FFFFFF' : (isMetal ? '#E6E8EA' : parsedHex),
-                    metalness: isCorcho ? 0.0 : (isMetal ? 0.95 : 0.1),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.15 : (isKraft ? 0.9 : 0.4)),
+                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : (isKraft ? 0.0 : 0.1)),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.9 : 0.4)),
                     envMapIntensity: isMetal ? 1.5 : 1.0,
+                    clearcoat: isMetal ? 0.5 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });
 
-                // Inyección GLSL: Forzar color BASE en la cara interior (basado en NORMAL GLOBAL MUNDIAL)
-                if (isDisco && customTex) {
+                // Inyección GLSL: Forzar color BLANCO en la cara interior
+                if (isDisco && activeTex) {
                     mat.onBeforeCompile = (shader) => {
                         shader.uniforms.uIsBottom = { value: isBottom ? 1.0 : 0.0 };
                         shader.uniforms.uBaseColor = { value: parsedHex };
@@ -162,7 +163,6 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                             '#include <common>',
                             `#include <common>
                              uniform float uIsBottom;
-                             uniform vec3 uBaseColor;
                              varying vec3 vWorldNormalCustom;`
                         ).replace(
                             '#include <color_fragment>',
@@ -170,12 +170,12 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                              if (uIsBottom > 0.5) {
                                  // Tapa inferior: mostrar textura en el fondo exterior (World Y < -0.5)
                                  if (vWorldNormalCustom.y > -0.5) {
-                                     diffuseColor.rgb = uBaseColor;
+                                     diffuseColor.rgb = vec3(1.0);
                                  }
                              } else {
                                  // Tapa superior: mostrar textura en la parte alta (World Y > 0.5)
                                  if (vWorldNormalCustom.y < 0.5) {
-                                     diffuseColor.rgb = uBaseColor;
+                                     diffuseColor.rgb = vec3(1.0);
                                  }
                              }`
                         ).replace(
