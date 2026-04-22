@@ -77,7 +77,7 @@ export default function Viewer3D() {
                     <MultiTubeAssembler />
 
                     {studioMode && !arMode && (
-                        <group position={[0, -centerY, 0]}>
+                        <group position={[0, -centerY - 1.5, 0]}>
                             {/* Plano de Reflexión Tipo Estudio Infinito */}
                             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
                                 <planeGeometry args={[500, 500]} />
@@ -87,8 +87,8 @@ export default function Viewer3D() {
                                     mixBlur={0} // Sin difuminar en realismo, reflejo exacto 
                                     mixStrength={isDarkMode ? 40 : 25}
                                     roughness={0.0} // PBR puro espejo
-                                    color={isDarkMode ? "#222222" : "#999999"} // Rompemos el negro puro
-                                    metalness={0.5}
+                                    color={isDarkMode ? "#222222" : "#eae6e1"} // Blanco hueso en modo luz
+                                    metalness={isDarkMode ? 0.5 : 0.2}
                                     mirror={1}
                                     depthScale={1}
                                     minDepthThreshold={0.9}
@@ -97,7 +97,7 @@ export default function Viewer3D() {
                             </mesh>
                             
                             {/* Sombras de Contacto Básicas */}
-                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2} opacity={isDarkMode ? 0.9 : 0.4} far={10} color={isDarkMode ? "#000000" : "#222222"} />
+                            <ContactShadows resolution={1024} scale={150} position={[0, 0, 0]} blur={2} opacity={isDarkMode ? 0.9 : 0.5} far={35} color={isDarkMode ? "#000000" : "#222222"} />
                         </group>
                     )}
                 </Suspense>

@@ -149,46 +149,32 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     mat.onBeforeCompile = (shader) => {
                         shader.uniforms.uIsBottom = { value: isBottom ? 1.0 : 0.0 };
                         shader.uniforms.uBaseColor = { value: parsedHex };
-                        shader.vertexShader = shader.vertexShader.replace(
+                         shader.vertexShader = shader.vertexShader.replace(
                             '#include <common>',
                             `#include <common>
-                             varying vec3 vWorldNormalCustom;`
+                             attribute float aIsTexFace;
+                             varying float vIsTexFace;`
                         ).replace(
-                            '#include <beginnormal_vertex>',
-                            `#include <beginnormal_vertex>
-                             vWorldNormalCustom = normalize(mat3(modelMatrix) * normal);`
+                            '#include <begin_vertex>',
+                            `#include <begin_vertex>
+                             vIsTexFace = aIsTexFace;`
                         );
 
                         shader.fragmentShader = shader.fragmentShader.replace(
                             '#include <common>',
                             `#include <common>
-                             uniform float uIsBottom;
-                             varying vec3 vWorldNormalCustom;`
+                             varying float vIsTexFace;`
                         ).replace(
                             '#include <color_fragment>',
                             `#include <color_fragment>
-                             if (uIsBottom > 0.5) {
-                                 // Tapa inferior: mostrar textura en el fondo exterior (World Y < -0.5)
-                                 if (vWorldNormalCustom.y > -0.5) {
-                                     diffuseColor.rgb = vec3(1.0);
-                                 }
-                             } else {
-                                 // Tapa superior: mostrar textura en la parte alta (World Y > 0.5)
-                                 if (vWorldNormalCustom.y < 0.5) {
-                                     diffuseColor.rgb = vec3(1.0);
-                                 }
+                             if (vIsTexFace < 0.5) {
+                                 diffuseColor.rgb = vec3(1.0);
                              }`
                         ).replace(
                             '#include <emissivemap_fragment>',
                             `#include <emissivemap_fragment>
-                             if (uIsBottom > 0.5) {
-                                 if (vWorldNormalCustom.y > -0.5) {
-                                     totalEmissiveRadiance = diffuseColor.rgb * 0.15;
-                                 }
-                             } else {
-                                 if (vWorldNormalCustom.y < 0.5) {
-                                     totalEmissiveRadiance = diffuseColor.rgb * 0.15;
-                                 }
+                             if (vIsTexFace < 0.5) {
+                                 totalEmissiveRadiance = diffuseColor.rgb * 0.15;
                              }`
                         );
                     };
@@ -223,8 +209,8 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     const ySize = b.max.y - b.min.y;
                     const zSize = b.max.z - b.min.z;
                     const posAttrib = geometry.attributes.position;
-                    const normAttrib = geometry.attributes.normal;
                     const uvs = new Float32Array(posAttrib.count * 2);
+                    const isTexFaceArray = new Float32Array(posAttrib.count);
 
                     if (isCorcho) {
                         // Offset paramétrico para centrar la rotación cilíndrica a la mitad del objeto
@@ -300,16 +286,21 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                             const px = posAttrib.getX(i);
                             const py = posAttrib.getY(i);
                             const pz = posAttrib.getZ(i);
+
                             uvs[i * 2] = (px - b.min.x) / xSize;
                             if (isXZ) {
                                 uvs[i * 2 + 1] = 1.0 - ((pz - b.min.z) / zSize);
+                                // Consideramos "fuera" la parte más alta en el eje Y
+                                isTexFaceArray[i] = (Math.abs(py - b.max.y) < 0.5) ? 1.0 : 0.0;
                             } else {
                                 uvs[i * 2 + 1] = 1.0 - ((py - b.min.y) / ySize);
+                                isTexFaceArray[i] = (Math.abs(pz - b.max.z) < 0.5) ? 1.0 : 0.0;
                             }
                         }
                     }
 
                     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+                    geometry.setAttribute('aIsTexFace', new THREE.BufferAttribute(isTexFaceArray, 1));
                     geometry.attributes.uv.needsUpdate = true;
                     child.geometry = geometry;
                 }
