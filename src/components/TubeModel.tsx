@@ -152,28 +152,28 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                          shader.vertexShader = shader.vertexShader.replace(
                             '#include <common>',
                             `#include <common>
-                             attribute float aIsTexFace;
-                             varying float vIsTexFace;`
+                             varying vec3 vWorldNormal;`
                         ).replace(
-                            '#include <begin_vertex>',
-                            `#include <begin_vertex>
-                             vIsTexFace = aIsTexFace;`
+                            '#include <defaultnormal_vertex>',
+                            `#include <defaultnormal_vertex>
+                             vWorldNormal = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);`
                         );
 
                         shader.fragmentShader = shader.fragmentShader.replace(
                             '#include <common>',
                             `#include <common>
-                             varying float vIsTexFace;`
+                             varying vec3 vWorldNormal;
+                             uniform float uIsBottom;`
                         ).replace(
                             '#include <color_fragment>',
                             `#include <color_fragment>
-                             if (vIsTexFace < 0.5) {
+                             if ((uIsBottom < 0.5 && vWorldNormal.y < -0.5) || (uIsBottom > 0.5 && vWorldNormal.y > 0.5)) {
                                  diffuseColor.rgb = vec3(1.0);
                              }`
                         ).replace(
                             '#include <emissivemap_fragment>',
                             `#include <emissivemap_fragment>
-                             if (vIsTexFace < 0.5) {
+                             if ((uIsBottom < 0.5 && vWorldNormal.y < -0.5) || (uIsBottom > 0.5 && vWorldNormal.y > 0.5)) {
                                  totalEmissiveRadiance = diffuseColor.rgb * 0.15;
                              }`
                         );
@@ -210,7 +210,6 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     const zSize = b.max.z - b.min.z;
                     const posAttrib = geometry.attributes.position;
                     const uvs = new Float32Array(posAttrib.count * 2);
-                    const isTexFaceArray = new Float32Array(posAttrib.count);
 
                     if (isCorcho) {
                         // Offset paramétrico para centrar la rotación cilíndrica a la mitad del objeto
@@ -290,17 +289,12 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                             uvs[i * 2] = (px - b.min.x) / xSize;
                             if (isXZ) {
                                 uvs[i * 2 + 1] = 1.0 - ((pz - b.min.z) / zSize);
-                                // Consideramos "fuera" la parte más alta en el eje Y
-                                isTexFaceArray[i] = (Math.abs(py - b.max.y) < 0.5) ? 1.0 : 0.0;
                             } else {
                                 uvs[i * 2 + 1] = 1.0 - ((py - b.min.y) / ySize);
-                                isTexFaceArray[i] = (Math.abs(pz - b.min.z) < 0.5) ? 1.0 : 0.0;
                             }
                         }
-                    }
 
                     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-                    geometry.setAttribute('aIsTexFace', new THREE.BufferAttribute(isTexFaceArray, 1));
                     geometry.attributes.uv.needsUpdate = true;
                     child.geometry = geometry;
                 }
