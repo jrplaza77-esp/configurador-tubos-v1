@@ -131,15 +131,25 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
         clone.traverse((child: any) => {
             if (child.isMesh) {
                 const isKraft = isDisco && capColor === '#C5A16F';
-                const activeTex = (customTex && isDisco) ? customTex : (isCorcho ? corkTex : (isKraft ? kraftTex : null));
-                const parsedHex = new THREE.Color(capColor === '#C5A16F' ? '#856a4d' : (capColor || '#111111'));
+                
+                let activeTex = (customTex && isDisco) ? customTex : (isCorcho ? corkTex : (isKraft ? kraftTex : null));
+                if (isKraft && activeTex) {
+                    activeTex = activeTex.clone();
+                    activeTex.needsUpdate = true;
+                    // Ajuste de escala (UVs) para que el grano del papel se vea natural
+                    const reps = targetDiam / 47;
+                    activeTex.repeat.set(reps, reps);
+                }
+
+                const parsedHex = new THREE.Color(capColor || '#111111');
+                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? '#EEEEEE' : parsedHex);
                 
                 const mat = new THREE.MeshPhysicalMaterial({
-                    color: activeTex ? '#FFFFFF' : (isMetal ? '#CCCCCC' : parsedHex),
-                    metalness: isCorcho ? 0.0 : (isMetal ? 0.85 : (isKraft ? 0.0 : 0.1)),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.25 : (isKraft ? 0.9 : 0.4)),
-                    envMapIntensity: isMetal ? 1.5 : 1.0,
-                    clearcoat: isMetal ? 0.2 : 0.0,
+                    color: matColor,
+                    metalness: isCorcho ? 0.0 : (isMetal ? 0.5 : 0.0),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.4 : (isKraft ? 0.8 : 0.4)),
+                    envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
+                    clearcoat: isMetal ? 0.1 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });
@@ -147,7 +157,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 
 
                 // Asignar mapeo UV en plano local (X y Z) para discos o Cilíndrico Seguro para corcho
-                if ((isDisco && customTex) || isCorcho) {
+                if (isDisco || isCorcho) {
 
                     // 0. Horneado (Baking) de matrices anidadas
                     // Modelos como el 63 fueron exportados de Blender con 'Z-Up' (Rotation X = -90 en el nodo).
