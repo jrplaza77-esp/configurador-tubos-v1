@@ -57,6 +57,11 @@ interface TubeState {
     setSpotLightIntensity: (val: number) => void;
     setEnvIntensity: (val: number) => void;
 
+    floorColorDay: string;
+    floorColorNight: string;
+    setFloorColorDay: (color: string) => void;
+    setFloorColorNight: (color: string) => void;
+
     setDesignMode: (mode: 'AUTO' | 'MANUAL') => void;
     setDesignScale: (val: number) => void;
     setDesignOffsetX: (val: number) => void;
@@ -92,6 +97,9 @@ export const useTubeStore = create<TubeState>((set) => ({
     spotLightIntensity: 1.2,
     envIntensity: 0.3,
 
+    floorColorDay: '#A0A0A0',
+    floorColorNight: '#1a1d21',
+
     designMode: 'AUTO',
     designScale: 1,
     designOffsetX: 0,
@@ -117,6 +125,9 @@ export const useTubeStore = create<TubeState>((set) => ({
     setLightIntensity: (val) => set({ lightIntensity: val }),
     setSpotLightIntensity: (val) => set({ spotLightIntensity: val }),
     setEnvIntensity: (val) => set({ envIntensity: val }),
+
+    setFloorColorDay: (color) => set({ floorColorDay: color }),
+    setFloorColorNight: (color) => set({ floorColorNight: color }),
 
     setDesignMode: (mode) => set({ designMode: mode }),
     setDesignScale: (val) => set({ designScale: val }),

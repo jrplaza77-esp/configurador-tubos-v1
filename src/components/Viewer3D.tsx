@@ -44,7 +44,7 @@ function CameraController() {
 }
 
 export default function Viewer3D() {
-    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity, activePanel } = useTubeStore() as any;
+    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity, activePanel, floorColorDay, floorColorNight } = useTubeStore() as any;
     const centerY = (height * 0.1) / 2;
 
     const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
@@ -85,7 +85,7 @@ export default function Viewer3D() {
                                     depthScale={1.2}
                                     minDepthThreshold={0.4}
                                     maxDepthThreshold={1.4}
-                                    color={isDarkMode ? "#1a1d21" : "#A0A0A0"}
+                                    color={isDarkMode ? floorColorNight : floorColorDay}
                                     metalness={0.5}
                                     mirror={isDarkMode ? 0.35 : 0.3}
                                 />

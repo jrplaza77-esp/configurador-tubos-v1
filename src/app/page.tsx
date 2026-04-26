@@ -417,7 +417,7 @@ function ColorPreset({ color, label, active, onClick, isDarkMode }: any) {
 }
 
 function PanelsContainer() {
-  const { activePanel, diameter, height, setDimensions, topCap, bottomCap, setCaps, plasticColor, setPlasticColor, isDarkMode, tubeColor, setTubeColor, discColor, setDiscColor, studioMode, setStudioMode, lightIntensity, setLightIntensity, spotLightIntensity, setSpotLightIntensity, envIntensity, setEnvIntensity, userDesign, designHeight } = useTubeStore() as any;
+  const { activePanel, diameter, height, setDimensions, topCap, bottomCap, setCaps, plasticColor, setPlasticColor, isDarkMode, tubeColor, setTubeColor, discColor, setDiscColor, studioMode, setStudioMode, lightIntensity, setLightIntensity, spotLightIntensity, setSpotLightIntensity, envIntensity, setEnvIntensity, userDesign, designHeight, floorColorDay, floorColorNight, setFloorColorDay, setFloorColorNight } = useTubeStore() as any;
   if (activePanel === 'NONE' || activePanel === 'ADMIN') return null;
 
   const selectClass = `w-full rounded-xl p-4 md:p-3 text-sm md:text-xs outline-none border transition-all ${isDarkMode ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-gray-50 text-black border-black/10'}`;
@@ -561,6 +561,35 @@ function PanelsContainer() {
               <span className="text-[#008234]">{Math.round(envIntensity * 100)}%</span>
             </div>
             <input type="range" min="0" max="2" step="0.1" value={envIntensity} onChange={(e) => setEnvIntensity(Number(e.target.value))} className="accent-[#008234] cursor-pointer w-full" />
+          </div>
+
+          {/* SELECTOR DE COLOR DE SUELO */}
+          <div className="flex flex-col gap-3 pt-4 border-t border-black/5">
+              <span className="text-[9px] text-[#008234] uppercase font-bold px-1">COLOR DEL SUELO</span>
+              <div className="flex gap-2 items-center px-1">
+                  <label 
+                      className={`w-12 h-12 rounded-xl border-2 cursor-pointer shadow-sm relative overflow-hidden transition-all hover:scale-105 active:scale-95 ${isDarkMode ? 'border-white/10' : 'border-black/10'}`}
+                      style={{ 
+                          backgroundColor: isDarkMode ? floorColorNight : floorColorDay 
+                      }}
+                  >
+                      <input 
+                          type="color" 
+                          value={isDarkMode ? floorColorNight : floorColorDay}
+                          onChange={(e) => {
+                              if (isDarkMode) {
+                                  setFloorColorNight(e.target.value);
+                              } else {
+                                  setFloorColorDay(e.target.value);
+                              }
+                          }}
+                          className="absolute opacity-0 inset-0 w-full h-full cursor-pointer"
+                      />
+                  </label>
+                  <span className={`text-[9px] uppercase font-black tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>
+                      {isDarkMode ? 'Suelo Noche' : 'Suelo Día'}
+                  </span>
+              </div>
           </div>
         </div>
       ) : null}
