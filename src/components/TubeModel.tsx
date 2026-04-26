@@ -142,7 +142,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 }
 
                 // Lógica de Color para Tapa de Metal
-                let metalColor = '#D1D1D1'; // Plata/Níquel real
+                let metalColor = '#E0E0E0'; // Plata Brillante por defecto
                 if (isMetal && (targetDiam === 63 || targetDiam === 80)) {
                     if (capColor === 'BLACK' || capColor === '#111111') {
                         metalColor = '#1A1A1A'; // Negro grafito oscuro
@@ -155,9 +155,9 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: matColor,
                     metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
-                    roughness: isCorcho ? 1.0 : (isMetal ? (metalColor === '#1A1A1A' ? 0.1 : 0.18) : (isKraft ? 0.8 : 0.4)),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.8 : 0.4)),
                     envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
-                    clearcoat: isMetal ? 0.2 : 0.0,
+                    clearcoat: isMetal ? 0.5 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });

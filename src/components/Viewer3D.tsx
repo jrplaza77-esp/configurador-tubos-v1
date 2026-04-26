@@ -47,9 +47,7 @@ export default function Viewer3D() {
     const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity } = useTubeStore() as any;
     const centerY = (height * 0.1) / 2;
 
-    const bgColor = isDarkMode 
-        ? (studioMode ? '#000000' : '#050505') 
-        : (studioMode ? '#f0f0f0' : '#ffffff');
+    const bgColor = isDarkMode ? '#1A1A1A' : '#F5F5F5';
 
     return (
         <div className="w-full h-full">
@@ -68,7 +66,6 @@ export default function Viewer3D() {
                     penumbra={studioMode ? 0.2 : 1} 
                     intensity={studioMode ? spotLightIntensity * 25 : spotLightIntensity} 
                     distance={studioMode ? 200 : 0}
-                    castShadow 
                 />
                 <pointLight position={[20, -10, 10]} intensity={studioMode ? 0.5 : 0.1} />
 
@@ -87,7 +84,7 @@ export default function Viewer3D() {
                                     mixBlur={0} // Sin difuminar en realismo, reflejo exacto 
                                     mixStrength={isDarkMode ? 40 : 25}
                                     roughness={0.0} // PBR puro espejo
-                                    color={isDarkMode ? "#222222" : "#eae6e1"} // Blanco hueso en modo luz
+                                    color={isDarkMode ? "#1A1A1A" : "#F5F5F5"} // Color del suelo unificado
                                     metalness={isDarkMode ? 0.5 : 0.2}
                                     mirror={1}
                                     depthScale={1}
@@ -96,8 +93,8 @@ export default function Viewer3D() {
                                 />
                             </mesh>
                             
-                            {/* Sombras de Contacto Básicas */}
-                            <ContactShadows resolution={1024} scale={150} position={[0, 0, 0]} blur={2} opacity={isDarkMode ? 0.9 : 0.5} far={35} color={isDarkMode ? "#000000" : "#222222"} />
+                            {/* Sombras de Contacto Suaves */}
+                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color={isDarkMode ? "#000000" : "#222222"} />
                         </group>
                     )}
                 </Suspense>
