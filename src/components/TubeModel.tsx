@@ -141,22 +141,35 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     activeTex.repeat.set(reps, reps);
                 }
 
-                // Lógica de Color para Tapa de Metal
-                let metalColor = '#d1d1d1'; // Plata brillante
-                if (isMetal && (targetDiam === 63 || targetDiam === 80)) {
-                    if (capColor === 'BLACK' || capColor === '#111111') {
-                        metalColor = '#1A1A1A'; // Negro grafito oscuro
-                    }
+                const parsedHex = new THREE.Color(capColor || '#111111');
+                
+                let finalColor = parsedHex;
+                let finalMetalness = 0.0;
+                let finalRoughness = 0.4;
+                let finalEnvMap = 1.0;
+
+                if (isCorcho) {
+                    finalMetalness = 0.0;
+                    finalRoughness = 1.0;
+                    finalEnvMap = 1.0;
+                } else if (isKraft) {
+                    finalMetalness = 0.0;
+                    finalRoughness = 0.8;
+                    finalEnvMap = 0.1;
+                } else if (isMetal) {
+                    finalColor = new THREE.Color('#d1d1d1');
+                    finalMetalness = 1.0;
+                    finalRoughness = 0.1;
+                    finalEnvMap = 1.5;
+                } else if (activeTex) {
+                    finalColor = new THREE.Color('#FFFFFF');
                 }
 
-                const parsedHex = new THREE.Color(capColor || '#111111');
-                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? metalColor : parsedHex);
-                
                 const mat = new THREE.MeshPhysicalMaterial({
-                    color: matColor,
-                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.8 : 0.4)),
-                    envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
+                    color: finalColor,
+                    metalness: finalMetalness,
+                    roughness: finalRoughness,
+                    envMapIntensity: finalEnvMap,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });

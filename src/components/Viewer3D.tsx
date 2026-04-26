@@ -72,26 +72,24 @@ export default function Viewer3D() {
                     
                     <MultiTubeAssembler />
 
-                    {!arMode && (
+                    {!arMode && isRealismActive && (
                         <group position={[0, -centerY, 0]}>
-                            {isRealismActive && (
-                                <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-                                    <planeGeometry args={[500, 500]} />
-                                    <MeshReflectorMaterial
-                                        blur={[300, 100]}
-                                        resolution={1024}
-                                        mixBlur={1}
-                                        mixStrength={isDarkMode ? 20 : 40}
-                                        roughness={1}
-                                        depthScale={1.2}
-                                        minDepthThreshold={0.4}
-                                        maxDepthThreshold={1.4}
-                                        color={isDarkMode ? "#1a1d21" : "#FDFDFF"}
-                                        metalness={0.5}
-                                        mirror={isDarkMode ? 0.35 : 0.5}
-                                    />
-                                </mesh>
-                            )}
+                            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+                                <planeGeometry args={[500, 500]} />
+                                <MeshReflectorMaterial
+                                    blur={[300, 100]}
+                                    resolution={1024}
+                                    mixBlur={1}
+                                    mixStrength={20}
+                                    roughness={1}
+                                    depthScale={1.2}
+                                    minDepthThreshold={0.4}
+                                    maxDepthThreshold={1.4}
+                                    color={isDarkMode ? "#1a1d21" : "#F5F5F5"}
+                                    metalness={0.5}
+                                    mirror={0.35}
+                                />
+                            </mesh>
                             
                             <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.4} far={1.5} color="#000000" />
                         </group>
@@ -104,7 +102,7 @@ export default function Viewer3D() {
                     minDistance={10}
                     maxDistance={200}
                     target={[0, centerY, 0]}
-                    maxPolarAngle={!arMode ? Math.PI / 2 - 0.05 : Math.PI}
+                    maxPolarAngle={(!arMode && isRealismActive) ? Math.PI / 2 - 0.05 : Math.PI}
                 />
             </Canvas>
         </div>
