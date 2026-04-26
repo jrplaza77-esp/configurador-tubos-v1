@@ -75,7 +75,6 @@ export default function Viewer3D() {
                     {!arMode && (
                         <group position={[0, -centerY, 0]}>
                             {isRealismActive && (
-                                {/* Plano de Suelo Realista */}
                                 <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
                                     <planeGeometry args={[500, 500]} />
                                     <MeshReflectorMaterial
@@ -87,14 +86,13 @@ export default function Viewer3D() {
                                         depthScale={1.2}
                                         minDepthThreshold={0.4}
                                         maxDepthThreshold={1.4}
-                                        color={isDarkMode ? "#1a1d21" : "#F5F5F5"}
+                                        color={isDarkMode ? "#1a1d21" : "#FDFDFF"}
                                         metalness={0.5}
                                         mirror={isDarkMode ? 0.35 : 0.5}
                                     />
                                 </mesh>
                             )}
                             
-                            {/* Sombras de Contacto Suaves universales (Adiós sombra dura circular) */}
                             <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.4} far={1.5} color="#000000" />
                         </group>
                     )}
