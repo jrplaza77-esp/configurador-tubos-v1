@@ -51,8 +51,8 @@ export default function Viewer3D() {
 
     // Colores del fondo
     const bgColor = isRealismActive
-        ? (isDarkMode ? '#1A1A1A' : '#F5F5F5')
-        : '#050505'; // Fondo negro sólido por defecto (Carga rápida)
+        ? '#F5F5F5'
+        : '#000000'; // Fondo negro absoluto por defecto (Carga rápida)
 
     return (
         <div className="w-full h-full">
@@ -63,20 +63,12 @@ export default function Viewer3D() {
 
                 <CameraController />
 
-                <ambientLight intensity={lightIntensity} />
-                <spotLight 
-                    position={[-30, 60, 40]} 
-                    angle={isRealismActive ? 0.3 : 0.5} 
-                    penumbra={isRealismActive ? 0.2 : 1} 
-                    intensity={isRealismActive ? spotLightIntensity * 25 : spotLightIntensity} 
-                    distance={isRealismActive ? 200 : 0}
-                />
-                <pointLight position={[20, -10, 10]} intensity={isRealismActive ? 0.5 : 0.1} />
+                <ambientLight intensity={0.7} />
+                <directionalLight position={[15, 20, 20]} intensity={2.5} castShadow />
 
                 <Suspense fallback={null}>
-                    {isRealismActive && (
-                        <Environment preset="studio" environmentIntensity={envIntensity} />
-                    )}
+                    <Environment preset="studio" environmentIntensity={isRealismActive ? envIntensity : 1.0} />
+                    
                     <MultiTubeAssembler />
 
                     {!arMode && (
@@ -86,16 +78,23 @@ export default function Viewer3D() {
                                     {/* Plano de Suelo Realista */}
                                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
                                         <planeGeometry args={[500, 500]} />
-                                        <meshPhysicalMaterial
-                                            color={isDarkMode ? "#1A1A1A" : "#F5F5F5"}
-                                            metalness={0.1}
-                                            roughness={0.65}
-                                            clearcoat={0.1}
+                                        <MeshReflectorMaterial
+                                            blur={[300, 100]}
+                                            resolution={1024}
+                                            mixBlur={1}
+                                            mixStrength={40}
+                                            roughness={1}
+                                            depthScale={1.2}
+                                            minDepthThreshold={0.4}
+                                            maxDepthThreshold={1.4}
+                                            color="#F5F5F5"
+                                            metalness={0.5}
+                                            mirror={0.5}
                                         />
                                     </mesh>
                                     
                                     {/* Sombras de Contacto Suaves */}
-                                    <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color={isDarkMode ? "#000000" : "#222222"} />
+                                    <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color="#000000" />
                                 </>
                             ) : (
                                 <>

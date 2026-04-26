@@ -151,17 +151,14 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 
                 const parsedHex = new THREE.Color(capColor || '#111111');
                 
-                // Si NO hay realismo, el metal se ve negro mate
-                const useRealism = isRealismActive && isMetal;
-                const finalMetalColor = useRealism ? metalColor : '#111111';
-                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? finalMetalColor : parsedHex);
+                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? metalColor : parsedHex);
                 
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: matColor,
-                    metalness: isCorcho ? 0.0 : (useRealism ? 1.0 : 0.0),
-                    roughness: isCorcho ? 1.0 : (useRealism ? 0.1 : (isMetal ? 0.9 : (isKraft ? 0.8 : 0.4))),
-                    envMapIntensity: isKraft ? 0.1 : (useRealism ? 1.2 : 0.0),
-                    clearcoat: useRealism ? 0.3 : 0.0,
+                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.15 : (isKraft ? 0.8 : 0.4)),
+                    envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
+                    clearcoat: isMetal ? 0.3 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });
