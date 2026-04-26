@@ -73,23 +73,16 @@ export default function Viewer3D() {
                     <Environment preset="studio" environmentIntensity={envIntensity} />
                     <MultiTubeAssembler />
 
-                    {studioMode && !arMode && (
+                    {!arMode && (
                         <group position={[0, -centerY, 0]}>
                             {/* Plano de Reflexión Tipo Estudio Infinito */}
-                            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+                            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
                                 <planeGeometry args={[500, 500]} />
-                                <MeshReflectorMaterial
-                                    blur={studioMode ? [0, 0] : [300, 100]} // Reflejo nítido tipo espejo en Realismo
-                                    resolution={2048}
-                                    mixBlur={0} // Sin difuminar en realismo, reflejo exacto 
-                                    mixStrength={isDarkMode ? 40 : 25}
-                                    roughness={0.0} // PBR puro espejo
-                                    color={isDarkMode ? "#1A1A1A" : "#F5F5F5"} // Color del suelo unificado
-                                    metalness={isDarkMode ? 0.5 : 0.2}
-                                    mirror={1}
-                                    depthScale={1}
-                                    minDepthThreshold={0.9}
-                                    maxDepthThreshold={1}
+                                <meshPhysicalMaterial
+                                    color={isDarkMode ? "#1A1A1A" : "#F5F5F5"}
+                                    metalness={0.1}
+                                    roughness={0.65}
+                                    clearcoat={0.1}
                                 />
                             </mesh>
                             
@@ -105,7 +98,7 @@ export default function Viewer3D() {
                     minDistance={10}
                     maxDistance={200}
                     target={[0, centerY, 0]}
-                    maxPolarAngle={studioMode ? Math.PI / 2 - 0.05 : Math.PI}
+                    maxPolarAngle={!arMode ? Math.PI / 2 - 0.05 : Math.PI}
                 />
             </Canvas>
         </div>
