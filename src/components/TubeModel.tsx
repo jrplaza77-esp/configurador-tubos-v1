@@ -155,9 +155,8 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: matColor,
                     metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.0 : (isKraft ? 0.8 : 0.4)),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.8 : 0.4)),
                     envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
-                    clearcoat: isMetal ? 0.3 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });

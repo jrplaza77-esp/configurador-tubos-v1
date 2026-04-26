@@ -49,10 +49,11 @@ export default function Viewer3D() {
 
     const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
 
-    // Colores del fondo
-    const bgColor = isRealismActive
-        ? (isDarkMode ? '#212529' : '#F5F5F5')
-        : '#000000'; // Fondo negro absoluto por defecto (Carga rápida)
+    // Colores del fondo estrictos
+    let bgColor = '#F5F5F5'; // Día (Blanco roto/hueso) en todos los modos
+    if (isDarkMode) {
+        bgColor = isRealismActive ? '#212529' : '#000000';
+    }
 
     return (
         <div className="w-full h-full">
@@ -73,35 +74,28 @@ export default function Viewer3D() {
 
                     {!arMode && (
                         <group position={[0, -centerY, 0]}>
-                            {isRealismActive ? (
-                                <>
-                                    {/* Plano de Suelo Realista */}
-                                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-                                        <planeGeometry args={[500, 500]} />
-                                        <MeshReflectorMaterial
-                                            blur={[300, 100]}
-                                            resolution={1024}
-                                            mixBlur={1}
-                                            mixStrength={isDarkMode ? 20 : 40}
-                                            roughness={1}
-                                            depthScale={1.2}
-                                            minDepthThreshold={0.4}
-                                            maxDepthThreshold={1.4}
-                                            color={isDarkMode ? "#1a1d21" : "#FDFDFF"}
-                                            metalness={0.5}
-                                            mirror={isDarkMode ? 0.35 : 0.5}
-                                        />
-                                    </mesh>
-                                    
-                                    {/* Sombras de Contacto Suaves */}
-                                    <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color="#000000" />
-                                </>
-                            ) : (
-                                <>
-                                    {/* Sombra circular dura (blob) original */}
-                                    <ContactShadows resolution={512} scale={150} position={[0, 0, 0]} blur={2} opacity={0.9} far={35} color="#000000" />
-                                </>
+                            {isRealismActive && (
+                                {/* Plano de Suelo Realista */}
+                                <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+                                    <planeGeometry args={[500, 500]} />
+                                    <MeshReflectorMaterial
+                                        blur={[300, 100]}
+                                        resolution={1024}
+                                        mixBlur={1}
+                                        mixStrength={isDarkMode ? 20 : 40}
+                                        roughness={1}
+                                        depthScale={1.2}
+                                        minDepthThreshold={0.4}
+                                        maxDepthThreshold={1.4}
+                                        color={isDarkMode ? "#1a1d21" : "#F5F5F5"}
+                                        metalness={0.5}
+                                        mirror={isDarkMode ? 0.35 : 0.5}
+                                    />
+                                </mesh>
                             )}
+                            
+                            {/* Sombras de Contacto Suaves universales (Adiós sombra dura circular) */}
+                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.4} far={1.5} color="#000000" />
                         </group>
                     )}
                 </Suspense>
