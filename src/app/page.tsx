@@ -490,10 +490,10 @@ function PanelsContainer() {
             </select>
           </div>
           
-          {(topCap.includes('PLASTICO') || bottomCap.includes('PLASTICO') || topCap.includes('TERMO') || bottomCap.includes('TERMO')) && (
+          {(topCap.includes('PLASTICO') || bottomCap.includes('PLASTICO') || topCap.includes('TERMO') || bottomCap.includes('TERMO') || ((diameter === '63' || diameter === '80') && (topCap.includes('METAL') || bottomCap.includes('METAL')))) && (
             <div className="flex items-center justify-between mt-2 px-1 pt-4 border-t border-black/5">
               <span className="text-[9px] text-[#008234] uppercase font-bold">
-                {topCap.includes('TERMO') && !topCap.includes('PLASTICO') ? 'Color Tapa Termo:' : 'Color Tapas Plástico:'}
+                {topCap.includes('METAL') || bottomCap.includes('METAL') ? 'Color Tapa Metal:' : (topCap.includes('TERMO') && !topCap.includes('PLASTICO') ? 'Color Tapa Termo:' : 'Color Tapas Plástico:')}
               </span>
               <div className="flex gap-4">
                 <button onClick={() => setPlasticColor('BLACK')} className={`w-8 h-8 rounded-full border-2 transition-all ${plasticColor === 'BLACK' ? 'border-[#008234] scale-125' : 'border-transparent'} bg-black shadow-md`} />

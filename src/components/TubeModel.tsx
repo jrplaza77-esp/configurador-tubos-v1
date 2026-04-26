@@ -141,17 +141,32 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     activeTex.repeat.set(reps, reps);
                 }
 
+                // Lógica de Color para Tapa de Metal
+                let metalColor = '#DDDDDD'; // Níquel por defecto
+                if (isMetal && (targetDiam === 63 || targetDiam === 80)) {
+                    if (capColor === 'BLACK' || capColor === '#111111') {
+                        metalColor = '#111111'; // Negro profundo metálico
+                    }
+                }
+
                 const parsedHex = new THREE.Color(capColor || '#111111');
-                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? '#EEEEEE' : parsedHex);
+                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? metalColor : parsedHex);
                 
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: matColor,
-                    metalness: isCorcho ? 0.0 : (isMetal ? 0.5 : 0.0),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.4 : (isKraft ? 0.8 : 0.4)),
+                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.15 : (isKraft ? 0.8 : 0.4)),
                     envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
-                    clearcoat: isMetal ? 0.1 : 0.0,
+                    clearcoat: isMetal ? 0.2 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
+                });
+
+                const matWhite = new THREE.MeshStandardMaterial({
+                    color: '#FFFFFF',
+                    roughness: 0.9,
+                    metalness: 0.0,
+                    side: THREE.DoubleSide
                 });
 
 
@@ -257,6 +272,43 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     } else {
                         // isDisco
                         const isXZ = zSize > ySize;
+                        
+                        const index = geometry.getIndex();
+                        const triCount = index ? index.count / 3 : posAttrib.count / 3;
+                        
+                        geometry.clearGroups();
+                        const p0 = new THREE.Vector3();
+                        const p1 = new THREE.Vector3();
+                        const p2 = new THREE.Vector3();
+                        const cb = new THREE.Vector3();
+                        const ab = new THREE.Vector3();
+
+                        for (let i = 0; i < triCount; i++) {
+                            const i3 = i * 3;
+                            const a = index ? index.getX(i3) : i3;
+                            const b = index ? index.getX(i3 + 1) : i3 + 1;
+                            const c = index ? index.getX(i3 + 2) : i3 + 2;
+
+                            p0.fromBufferAttribute(posAttrib, a);
+                            p1.fromBufferAttribute(posAttrib, b);
+                            p2.fromBufferAttribute(posAttrib, c);
+
+                            cb.subVectors(p2, p1);
+                            ab.subVectors(p0, p1);
+                            cb.cross(ab);
+                            cb.normalize();
+
+                            // Normal is cb
+                            let isOutside = false;
+                            if (isXZ) {
+                                if (cb.y > 0.5) isOutside = true;
+                            } else {
+                                if (cb.z > 0.5) isOutside = true;
+                            }
+
+                            geometry.addGroup(i3, 3, isOutside ? 0 : 1);
+                        }
+
                         for (let i = 0; i < posAttrib.count; i++) {
                             const px = posAttrib.getX(i);
                             const py = posAttrib.getY(i);
@@ -276,7 +328,11 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     child.geometry = geometry;
                 }
 
-                child.material = mat;
+                if (isDisco && isKraft) {
+                    child.material = [mat, matWhite];
+                } else {
+                    child.material = mat;
+                }
             }
         });
 
@@ -532,6 +588,12 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
         return new THREE.ShapeGeometry(shape);
     }, [tubeData, isSectionActive]);
 
+    const getCapColor = (capType: string) => {
+        if (capType === 'PLASTICO' || capType === 'TERMO') return capHex;
+        if (capType === 'METAL' && (D_num === 63 || D_num === 80)) return capHex; // Usamos el color de plástico para la lógica de Negro/Níquel
+        return discColor;
+    };
+
     return (
         <group position={[position[0] * SC, position[1] * SC, position[2] * SC]}>
             <Suspense fallback={null}>
@@ -566,19 +628,19 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                 )}
 
                 <ExplodableGroup isExploded={isExploded} explodeOffset={30 * SC} basePos={[0, (height / 2) * SC, 0]}>
-                    {topCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} />}
-                    {topCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} capColor={capHex} />}
+                    {topCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
+                    {topCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
                     {topCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} capColor={discColor} customTex={discTexMap} kraftTex={kraftTex} />}
                     {topCap === 'CORCHO' && <LegoPiece url={getCapUrl(D, 'tapa_corcho')} targetDiam={D_num} adj={AJUSTE[D]?.CORCHO || AJUSTE['60'].CORCHO} pos={[0, 0, 0]} capColor="#D2A679" />}
-                    {topCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} />}
+                    {topCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
                 </ExplodableGroup>
 
                 <ExplodableGroup isExploded={isExploded} explodeOffset={-30 * SC} basePos={[0, -(height / 2) * SC, 0]}>
-                    {bottomCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} />}
-                    {bottomCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={capHex} isBottom={true} />}
+                    {bottomCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} />}
+                    {bottomCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={getCapColor(bottomCap)} isBottom={true} />}
                     {bottomCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={discColor} isBottom={true} customTex={discTexMap} kraftTex={kraftTex} />}
                     {bottomCap === 'SELLADO' && <LegoPiece url={getCapUrl(D, 'fondo_sel')} targetDiam={D_num} adj={AJUSTE[D]?.SELLADO || AJUSTE['60'].SELLADO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} customTex={discTexMap} capColor={discColor} kraftTex={kraftTex} />}
-                    {bottomCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} />}
+                    {bottomCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} />}
                 </ExplodableGroup>
             </Suspense>
         </group>
