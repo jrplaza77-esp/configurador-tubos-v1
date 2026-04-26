@@ -52,7 +52,7 @@ export default function Viewer3D() {
     // Colores del fondo
     const bgColor = isRealismActive
         ? (isDarkMode ? '#1A1A1A' : '#F5F5F5')
-        : (isDarkMode ? '#050505' : '#ffffff');
+        : '#050505'; // Fondo negro sólido por defecto (Carga rápida)
 
     return (
         <div className="w-full h-full">
@@ -100,7 +100,7 @@ export default function Viewer3D() {
                             ) : (
                                 <>
                                     {/* Sombra circular dura (blob) original */}
-                                    <ContactShadows resolution={1024} scale={150} position={[0, 0, 0]} blur={2} opacity={isDarkMode ? 0.9 : 0.5} far={35} color={isDarkMode ? "#000000" : "#222222"} />
+                                    <ContactShadows resolution={512} scale={150} position={[0, 0, 0]} blur={2} opacity={0.9} far={35} color="#000000" />
                                 </>
                             )}
                         </group>
