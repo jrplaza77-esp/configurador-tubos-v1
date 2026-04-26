@@ -93,8 +93,8 @@ export const useTubeStore = create<TubeState>((set) => ({
     tubeColor: '#C5A16F', // Kraft
     discColor: '#111111', // Negro
 
-    lightIntensity: 0.3,
-    spotLightIntensity: 1.2,
+    lightIntensity: 0.7,
+    spotLightIntensity: 2.5,
     envIntensity: 0.3,
 
     floorColorDay: '#A0A0A0',
@@ -178,7 +178,7 @@ export const useTubeStore = create<TubeState>((set) => ({
 
     toggleDarkMode: () => set((state) => ({ 
         isDarkMode: !state.isDarkMode,
-        lightIntensity: !state.isDarkMode ? 0.3 : 0.6,
+        lightIntensity: !state.isDarkMode ? 0.7 : 0.8,
         envIntensity: !state.isDarkMode ? 0.3 : 0.6
     })),
     toggleStudioMode: () => set((state) => ({ studioMode: !state.studioMode })),

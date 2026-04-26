@@ -340,7 +340,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     child.geometry = geometry;
                 }
 
-                if (isDisco && isKraft) {
+                if (isDisco) {
                     child.material = [mat, matWhite];
                 } else {
                     child.material = mat;

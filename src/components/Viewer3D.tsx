@@ -64,8 +64,8 @@ export default function Viewer3D() {
 
                 <CameraController />
 
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[15, 20, 20]} intensity={2.5} castShadow />
+                <ambientLight intensity={lightIntensity} />
+                <directionalLight position={[15, 20, 20]} intensity={spotLightIntensity} castShadow />
 
                 <Suspense fallback={null}>
                     <Environment preset="studio" environmentIntensity={isRealismActive ? envIntensity : 1.0} />
