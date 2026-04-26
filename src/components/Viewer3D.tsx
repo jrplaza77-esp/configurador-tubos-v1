@@ -51,7 +51,7 @@ export default function Viewer3D() {
 
     // Colores del fondo
     const bgColor = isRealismActive
-        ? '#F5F5F5'
+        ? (isDarkMode ? '#212529' : '#F5F5F5')
         : '#000000'; // Fondo negro absoluto por defecto (Carga rápida)
 
     return (
@@ -82,14 +82,14 @@ export default function Viewer3D() {
                                             blur={[300, 100]}
                                             resolution={1024}
                                             mixBlur={1}
-                                            mixStrength={40}
+                                            mixStrength={isDarkMode ? 20 : 40}
                                             roughness={1}
                                             depthScale={1.2}
                                             minDepthThreshold={0.4}
                                             maxDepthThreshold={1.4}
-                                            color="#F5F5F5"
+                                            color={isDarkMode ? "#1a1d21" : "#FDFDFF"}
                                             metalness={0.5}
-                                            mirror={0.5}
+                                            mirror={isDarkMode ? 0.35 : 0.5}
                                         />
                                     </mesh>
                                     
