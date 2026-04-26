@@ -294,7 +294,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                                 isTexFaceArray[i] = (Math.abs(py - b.max.y) < 0.5) ? 1.0 : 0.0;
                             } else {
                                 uvs[i * 2 + 1] = 1.0 - ((py - b.min.y) / ySize);
-                                isTexFaceArray[i] = (Math.abs(pz - b.max.z) < 0.5) ? 1.0 : 0.0;
+                                isTexFaceArray[i] = (Math.abs(pz - b.min.z) < 0.5) ? 1.0 : 0.0;
                             }
                         }
                     }

@@ -77,7 +77,7 @@ export default function Viewer3D() {
                     <MultiTubeAssembler />
 
                     {studioMode && !arMode && (
-                        <group position={[0, -centerY - 1.5, 0]}>
+                        <group position={[0, -centerY, 0]}>
                             {/* Plano de Reflexión Tipo Estudio Infinito */}
                             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
                                 <planeGeometry args={[500, 500]} />
