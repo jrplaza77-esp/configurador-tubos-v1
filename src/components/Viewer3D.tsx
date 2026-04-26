@@ -50,7 +50,7 @@ export default function Viewer3D() {
     const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
 
     // Colores del fondo estrictos
-    let bgColor = '#EAEAEA'; // Día (Gris muy clarito) en todos los modos
+    let bgColor = '#F5F5F5'; // Día (Blanco roto) en todos los modos
     if (isDarkMode) {
         bgColor = isRealismActive ? '#212529' : '#000000';
     }
@@ -85,7 +85,7 @@ export default function Viewer3D() {
                                     depthScale={1.2}
                                     minDepthThreshold={0.4}
                                     maxDepthThreshold={1.4}
-                                    color={isDarkMode ? "#1a1d21" : "#CCCCCC"}
+                                    color={isDarkMode ? "#1a1d21" : "#A0A0A0"}
                                     metalness={0.5}
                                     mirror={isDarkMode ? 0.35 : 0.3}
                                 />
