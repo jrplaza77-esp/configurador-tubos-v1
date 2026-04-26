@@ -269,6 +269,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                                 uvs[i * 2 + 1] = 1.0 - ((py - b.min.y) / ySize);
                             }
                         }
+                    }
 
                     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
                     geometry.attributes.uv.needsUpdate = true;
@@ -295,8 +296,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 
         group.add(clone);
         return group;
-        // 3. ¡IMPORTANTE! Añade capColor, customTex, isCorcho y corkTex a las dependencias
-    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex, kraftTex, isBottom]);
+    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex, kraftTex]);
 
     const rad = (d: number) => d * (Math.PI / 180);
     return (
@@ -435,13 +435,19 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
     }, [tubeData, height]);
 
     // 3. Materiales (Definiciones corregidas)
-    const extMat = useMemo(() => new THREE.MeshStandardMaterial({
-        color: userDesign ? "#FFFFFF" : tubeColor,
-        map: (!userDesign && tubeColor === '#C5A16F') ? kraftTex : null,
-        side: THREE.FrontSide,
-        roughness: 0.9,
-        clippingPlanes: isSectionActive ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)] : []
-    }), [kraftTex, userDesign, isSectionActive, tubeColor]);
+    const extMat = useMemo(() => {
+        const isKraft = (!userDesign && tubeColor === '#C5A16F');
+        return new THREE.MeshPhysicalMaterial({
+            color: userDesign ? "#FFFFFF" : tubeColor,
+            map: isKraft ? kraftTex : null,
+            side: THREE.FrontSide,
+            metalness: 0.0,
+            roughness: isKraft ? 0.8 : 0.9,
+            envMapIntensity: isKraft ? 0.1 : 1.0,
+            clearcoat: 0.0,
+            clippingPlanes: isSectionActive ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)] : []
+        });
+    }, [kraftTex, userDesign, isSectionActive, tubeColor]);
 
     const intMat = useMemo(() => new THREE.MeshStandardMaterial({
         color: "#FFFFFF",
