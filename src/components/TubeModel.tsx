@@ -135,50 +135,16 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 const parsedHex = new THREE.Color(capColor === '#C5A16F' ? '#856a4d' : (capColor || '#111111'));
                 
                 const mat = new THREE.MeshPhysicalMaterial({
-                    color: activeTex ? '#FFFFFF' : (isMetal ? '#E6E8EA' : parsedHex),
-                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : (isKraft ? 0.0 : 0.1)),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.9 : 0.4)),
+                    color: activeTex ? '#FFFFFF' : (isMetal ? '#CCCCCC' : parsedHex),
+                    metalness: isCorcho ? 0.0 : (isMetal ? 0.85 : (isKraft ? 0.0 : 0.1)),
+                    roughness: isCorcho ? 1.0 : (isMetal ? 0.25 : (isKraft ? 0.9 : 0.4)),
                     envMapIntensity: isMetal ? 1.5 : 1.0,
-                    clearcoat: isMetal ? 0.5 : 0.0,
+                    clearcoat: isMetal ? 0.2 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });
 
-                // Inyección GLSL: Forzar color BLANCO en la cara interior
-                if (isDisco && activeTex) {
-                    mat.onBeforeCompile = (shader) => {
-                        shader.uniforms.uIsBottom = { value: isBottom ? 1.0 : 0.0 };
-                        shader.uniforms.uBaseColor = { value: parsedHex };
-                         shader.vertexShader = shader.vertexShader.replace(
-                            '#include <common>',
-                            `#include <common>
-                             varying vec3 vWorldNormal;`
-                        ).replace(
-                            '#include <defaultnormal_vertex>',
-                            `#include <defaultnormal_vertex>
-                             vWorldNormal = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);`
-                        );
 
-                        shader.fragmentShader = shader.fragmentShader.replace(
-                            '#include <common>',
-                            `#include <common>
-                             varying vec3 vWorldNormal;
-                             uniform float uIsBottom;`
-                        ).replace(
-                            '#include <color_fragment>',
-                            `#include <color_fragment>
-                             if ((uIsBottom < 0.5 && vWorldNormal.y < -0.5) || (uIsBottom > 0.5 && vWorldNormal.y > 0.5)) {
-                                 diffuseColor.rgb = vec3(1.0);
-                             }`
-                        ).replace(
-                            '#include <emissivemap_fragment>',
-                            `#include <emissivemap_fragment>
-                             if ((uIsBottom < 0.5 && vWorldNormal.y < -0.5) || (uIsBottom > 0.5 && vWorldNormal.y > 0.5)) {
-                                 totalEmissiveRadiance = diffuseColor.rgb * 0.15;
-                             }`
-                        );
-                    };
-                }
 
                 // Asignar mapeo UV en plano local (X y Z) para discos o Cilíndrico Seguro para corcho
                 if ((isDisco && customTex) || isCorcho) {
