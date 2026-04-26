@@ -79,13 +79,13 @@ export default function Viewer3D() {
                                 <MeshReflectorMaterial
                                     blur={[300, 100]}
                                     resolution={1024}
-                                    mixBlur={1}
+                                    mixBlur={0.5}
                                     mixStrength={20}
-                                    roughness={1}
+                                    roughness={0.15}
                                     depthScale={1.2}
                                     minDepthThreshold={0.4}
                                     maxDepthThreshold={1.4}
-                                    color={isDarkMode ? "#1a1d21" : "#F5F5F5"}
+                                    color={isDarkMode ? "#1a1d21" : "#E5E5E5"}
                                     metalness={0.5}
                                     mirror={0.35}
                                 />

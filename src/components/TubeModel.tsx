@@ -157,9 +157,9 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                     finalRoughness = 0.8;
                     finalEnvMap = 0.1;
                 } else if (isMetal) {
-                    finalColor = new THREE.Color('#d1d1d1');
-                    finalMetalness = 1.0;
-                    finalRoughness = 0.1;
+                    finalColor = new THREE.Color('#e0e0e0');
+                    finalMetalness = 0.75;
+                    finalRoughness = 0.35;
                     finalEnvMap = 1.5;
                 } else if (activeTex) {
                     finalColor = new THREE.Color('#FFFFFF');
