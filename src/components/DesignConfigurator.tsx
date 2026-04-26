@@ -54,7 +54,7 @@ export default function DesignConfigurator() {
         }
     };
 
-    const downloadTemplate = () => {
+    const downloadTemplate = async () => {
         let svgContent = '';
         if (isDiscTemplate) {
             svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${D} ${D}" width="${D}mm" height="${D}mm">
@@ -86,10 +86,33 @@ export default function DesignConfigurator() {
         }
 
         const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Plantilla_Arplast_${isDiscTemplate ? 'Disco' : 'Tubo'}_D${D}.svg`;
-        link.click();
+        const defaultName = isDiscTemplate 
+            ? `disco ${D}, formato ${D} x ${D}.svg`
+            : `tubo ${D}x${height}, formato ${anchoTotal} x ${altoTotal}.svg`;
+
+        try {
+            if ('showSaveFilePicker' in window) {
+                const handle = await (window as any).showSaveFilePicker({
+                    suggestedName: defaultName,
+                    types: [{
+                        description: 'SVG Image',
+                        accept: { 'image/svg+xml': ['.svg'] },
+                    }],
+                });
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+            } else {
+                const filename = window.prompt("Nombre del archivo a guardar:", defaultName);
+                if (!filename) return;
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = filename.endsWith('.svg') ? filename : filename + '.svg';
+                link.click();
+            }
+        } catch (err) {
+            console.error("Error guardando el archivo", err);
+        }
     };
 
     const currentDesign = isDiscTemplate ? userDesignDisc : userDesign;
@@ -127,7 +150,9 @@ export default function DesignConfigurator() {
                     <button onClick={downloadTemplate} className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">
                         <Download size={16} /> Descargar
                     </button>
-                    <button onClick={() => setIsDesignOpen(false)} className="p-2 hover:bg-white/10 rounded-full text-white bg-white/5"><X size={24} /></button>
+                    <button onClick={() => setIsDesignOpen(false)} className="flex-1 sm:flex-none bg-green-500 hover:bg-green-400 text-black px-8 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                        APLICAR
+                    </button>
                 </div>
             </div>
 
