@@ -80,18 +80,18 @@ export default function Viewer3D() {
                                     blur={[300, 100]}
                                     resolution={1024}
                                     mixBlur={0.5}
-                                    mixStrength={20}
+                                    mixStrength={isDarkMode ? 20 : 40}
                                     roughness={0.15}
                                     depthScale={1.2}
                                     minDepthThreshold={0.4}
                                     maxDepthThreshold={1.4}
-                                    color={isDarkMode ? "#1a1d21" : "#E5E5E5"}
+                                    color={isDarkMode ? "#1a1d21" : "#D4D4D4"}
                                     metalness={0.5}
-                                    mirror={0.35}
+                                    mirror={isDarkMode ? 0.35 : 0.6}
                                 />
                             </mesh>
                             
-                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.4} far={1.5} color="#000000" />
+                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={isDarkMode ? 0.4 : 0.65} far={1.5} color="#000000" />
                         </group>
                     )}
                 </Suspense>
