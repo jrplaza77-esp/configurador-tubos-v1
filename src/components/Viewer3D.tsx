@@ -44,17 +44,21 @@ function CameraController() {
 }
 
 export default function Viewer3D() {
-    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity } = useTubeStore() as any;
+    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity, activePanel } = useTubeStore() as any;
     const centerY = (height * 0.1) / 2;
 
-    const bgColor = isDarkMode ? '#1A1A1A' : '#F5F5F5';
+    const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
+
+    // Colores del fondo
+    const bgColor = isRealismActive
+        ? (isDarkMode ? '#1A1A1A' : '#F5F5F5')
+        : (isDarkMode ? '#050505' : '#ffffff');
 
     return (
         <div className="w-full h-full">
             <Canvas shadows gl={{ localClippingEnabled: true, antialias: true, preserveDrawingBuffer: true, alpha: true }}>
                 {!arMode && <color attach="background" args={[bgColor]} />}
 
-                {/* Cámara con posición inicial coherente */}
                 <PerspectiveCamera makeDefault position={[0, centerY + 10, 70]} fov={35} />
 
                 <CameraController />
@@ -62,32 +66,43 @@ export default function Viewer3D() {
                 <ambientLight intensity={lightIntensity} />
                 <spotLight 
                     position={[-30, 60, 40]} 
-                    angle={studioMode ? 0.3 : 0.5} 
-                    penumbra={studioMode ? 0.2 : 1} 
-                    intensity={studioMode ? spotLightIntensity * 25 : spotLightIntensity} 
-                    distance={studioMode ? 200 : 0}
+                    angle={isRealismActive ? 0.3 : 0.5} 
+                    penumbra={isRealismActive ? 0.2 : 1} 
+                    intensity={isRealismActive ? spotLightIntensity * 25 : spotLightIntensity} 
+                    distance={isRealismActive ? 200 : 0}
                 />
-                <pointLight position={[20, -10, 10]} intensity={studioMode ? 0.5 : 0.1} />
+                <pointLight position={[20, -10, 10]} intensity={isRealismActive ? 0.5 : 0.1} />
 
                 <Suspense fallback={null}>
-                    <Environment preset="studio" environmentIntensity={envIntensity} />
+                    {isRealismActive && (
+                        <Environment preset="studio" environmentIntensity={envIntensity} />
+                    )}
                     <MultiTubeAssembler />
 
                     {!arMode && (
                         <group position={[0, -centerY, 0]}>
-                            {/* Plano de Reflexión Tipo Estudio Infinito */}
-                            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-                                <planeGeometry args={[500, 500]} />
-                                <meshPhysicalMaterial
-                                    color={isDarkMode ? "#1A1A1A" : "#F5F5F5"}
-                                    metalness={0.1}
-                                    roughness={0.65}
-                                    clearcoat={0.1}
-                                />
-                            </mesh>
-                            
-                            {/* Sombras de Contacto Suaves */}
-                            <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color={isDarkMode ? "#000000" : "#222222"} />
+                            {isRealismActive ? (
+                                <>
+                                    {/* Plano de Suelo Realista */}
+                                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+                                        <planeGeometry args={[500, 500]} />
+                                        <meshPhysicalMaterial
+                                            color={isDarkMode ? "#1A1A1A" : "#F5F5F5"}
+                                            metalness={0.1}
+                                            roughness={0.65}
+                                            clearcoat={0.1}
+                                        />
+                                    </mesh>
+                                    
+                                    {/* Sombras de Contacto Suaves */}
+                                    <ContactShadows resolution={1024} scale={50} position={[0, 0, 0]} blur={2.5} opacity={0.35} far={1.5} color={isDarkMode ? "#000000" : "#222222"} />
+                                </>
+                            ) : (
+                                <>
+                                    {/* Sombra circular dura (blob) original */}
+                                    <ContactShadows resolution={1024} scale={150} position={[0, 0, 0]} blur={2} opacity={isDarkMode ? 0.9 : 0.5} far={35} color={isDarkMode ? "#000000" : "#222222"} />
+                                </>
+                            )}
                         </group>
                     )}
                 </Suspense>

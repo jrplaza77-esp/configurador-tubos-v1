@@ -104,7 +104,7 @@ const getCapUrl = (D: string, type: string) => {
 };
 
 // --- 📦 COMPONENTE: CARGADOR DE TAPAS ---
-function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBottom, customTex, kraftTex }: any) {
+function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBottom, customTex, kraftTex, isRealismActive }: any) {
     const { scene } = useGLTF(url) as any;
     const isCorcho = url.includes('corcho');
 
@@ -150,14 +150,18 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
                 }
 
                 const parsedHex = new THREE.Color(capColor || '#111111');
-                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? metalColor : parsedHex);
+                
+                // Si NO hay realismo, el metal se ve plano usando su capColor original
+                const useRealism = isRealismActive && isMetal;
+                const finalMetalColor = useRealism ? metalColor : parsedHex;
+                const matColor = (activeTex && !isKraft) ? '#FFFFFF' : (isMetal ? finalMetalColor : parsedHex);
                 
                 const mat = new THREE.MeshPhysicalMaterial({
                     color: matColor,
-                    metalness: isCorcho ? 0.0 : (isMetal ? 1.0 : 0.0),
-                    roughness: isCorcho ? 1.0 : (isMetal ? 0.1 : (isKraft ? 0.8 : 0.4)),
-                    envMapIntensity: isKraft ? 0.1 : (isMetal ? 1.5 : 1.0),
-                    clearcoat: isMetal ? 0.3 : 0.0,
+                    metalness: isCorcho ? 0.0 : (useRealism ? 1.0 : (isMetal ? 0.3 : 0.0)),
+                    roughness: isCorcho ? 1.0 : (useRealism ? 0.1 : (isMetal ? 0.7 : (isKraft ? 0.8 : 0.4))),
+                    envMapIntensity: isKraft ? 0.1 : (useRealism ? 1.2 : 1.0),
+                    clearcoat: useRealism ? 0.3 : 0.0,
                     side: THREE.DoubleSide,
                     map: activeTex
                 });
@@ -352,7 +356,7 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 
         group.add(clone);
         return group;
-    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex, kraftTex]);
+    }, [scene, targetDiam, adj, url, capColor, customTex, isCorcho, corkTex, kraftTex, isRealismActive]);
 
     const rad = (d: number) => d * (Math.PI / 180);
     return (
@@ -365,7 +369,9 @@ function LegoPiece({ url, pos, targetDiam, adj, rot = [0, 0, 0], capColor, isBot
 }
 
 export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
-    const { diameter: storeDiameter, height: storeHeight, topCap, bottomCap, userDesign, isSectionActive, plasticColor, tubeColor, discColor, isExploded } = useTubeStore() as any;
+    const { activePanel, studioMode, diameter: storeDiameter, height: storeHeight, topCap, bottomCap, userDesign, isSectionActive, plasticColor, tubeColor, discColor, isExploded } = useTubeStore() as any;
+
+    const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
 
     const capHex = plasticColor === 'WHITE' ? '#FFFFFF' : '#111111';
 
@@ -628,19 +634,19 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                 )}
 
                 <ExplodableGroup isExploded={isExploded} explodeOffset={30 * SC} basePos={[0, (height / 2) * SC, 0]}>
-                    {topCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
-                    {topCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
-                    {topCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} capColor={discColor} customTex={discTexMap} kraftTex={kraftTex} />}
-                    {topCap === 'CORCHO' && <LegoPiece url={getCapUrl(D, 'tapa_corcho')} targetDiam={D_num} adj={AJUSTE[D]?.CORCHO || AJUSTE['60'].CORCHO} pos={[0, 0, 0]} capColor="#D2A679" />}
-                    {topCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} />}
+                    {topCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} capColor={getCapColor(topCap)} isRealismActive={isRealismActive} />}
+                    {topCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} isRealismActive={isRealismActive} />}
+                    {topCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} capColor={discColor} customTex={discTexMap} kraftTex={kraftTex} isRealismActive={isRealismActive} />}
+                    {topCap === 'CORCHO' && <LegoPiece url={getCapUrl(D, 'tapa_corcho')} targetDiam={D_num} adj={AJUSTE[D]?.CORCHO || AJUSTE['60'].CORCHO} pos={[0, 0, 0]} capColor="#D2A679" isRealismActive={isRealismActive} />}
+                    {topCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} capColor={getCapColor(topCap)} isRealismActive={isRealismActive} />}
                 </ExplodableGroup>
 
                 <ExplodableGroup isExploded={isExploded} explodeOffset={-30 * SC} basePos={[0, -(height / 2) * SC, 0]}>
-                    {bottomCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} />}
-                    {bottomCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={getCapColor(bottomCap)} isBottom={true} />}
-                    {bottomCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={discColor} isBottom={true} customTex={discTexMap} kraftTex={kraftTex} />}
-                    {bottomCap === 'SELLADO' && <LegoPiece url={getCapUrl(D, 'fondo_sel')} targetDiam={D_num} adj={AJUSTE[D]?.SELLADO || AJUSTE['60'].SELLADO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} customTex={discTexMap} capColor={discColor} kraftTex={kraftTex} />}
-                    {bottomCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} />}
+                    {bottomCap === 'METAL' && <LegoPiece url={getCapUrl(D, 'tapa_metal')} targetDiam={D_num} adj={AJUSTE[D]?.METAL || AJUSTE['60'].METAL} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} isRealismActive={isRealismActive} />}
+                    {bottomCap === 'PLASTICO' && <LegoPiece url={getCapUrl(D, 'tapa_plastico')} targetDiam={D_num} adj={AJUSTE[D]?.PLASTICO || AJUSTE['60'].PLASTICO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={getCapColor(bottomCap)} isBottom={true} isRealismActive={isRealismActive} />}
+                    {bottomCap === 'BORDON_DISCO' && <LegoPiece url={getCapUrl(D, 'disco')} targetDiam={D_num} adj={AJUSTE[D]?.DISCO || AJUSTE['60'].DISCO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} capColor={discColor} isBottom={true} customTex={discTexMap} kraftTex={kraftTex} isRealismActive={isRealismActive} />}
+                    {bottomCap === 'SELLADO' && <LegoPiece url={getCapUrl(D, 'fondo_sel')} targetDiam={D_num} adj={AJUSTE[D]?.SELLADO || AJUSTE['60'].SELLADO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} customTex={discTexMap} capColor={discColor} kraftTex={kraftTex} isRealismActive={isRealismActive} />}
+                    {bottomCap === 'TERMO' && <LegoPiece url={getCapUrl(D, 'tapa_termo')} targetDiam={D_num} adj={AJUSTE[D]?.TERMO || AJUSTE['60'].TERMO} pos={[0, 0, 0]} rot={[Math.PI, 0, 0]} isBottom={true} capColor={getCapColor(bottomCap)} isRealismActive={isRealismActive} />}
                 </ExplodableGroup>
             </Suspense>
         </group>
