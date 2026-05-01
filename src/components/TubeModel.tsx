@@ -542,16 +542,18 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
 
     useEffect(() => {
         if (!textureMap) return;
-        const D_store = Number(storeDiameter || 60);
-        const circ = (D_store + 3.34) * Math.PI;
-        const totalW = circ + 9.0;
+        const D_str = String(storeDiameter || '60');
+        const medidas = MEDIDAS_BASE[D_str] || MEDIDAS_BASE['60'];
+        const totalW = medidas.desarrollo;
+        const solape = medidas.solape || 9.0;
+        const circ = totalW - solape;
         
         if (designMode === 'AUTO') {
             textureMap.repeat.set(circ / totalW, 1);
-            textureMap.offset.set(0, 0);
+            textureMap.offset.set(solape / totalW, 0);
         } else {
             textureMap.repeat.set((circ / totalW) / designScale, 1 / designScale);
-            textureMap.offset.set(designOffsetX, designOffsetY);
+            textureMap.offset.set((solape / totalW) + designOffsetX, designOffsetY);
         }
         textureMap.needsUpdate = true;
     }, [textureMap, storeDiameter, designMode, designScale, designOffsetX, designOffsetY]);

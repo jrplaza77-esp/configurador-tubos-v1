@@ -69,15 +69,15 @@ export default function DesignConfigurator() {
                 <!-- Fondo plancha -->
                 <rect width="${anchoTotal}" height="${altoTotal}" fill="#856a4d" />
                 <!-- Solape -->
-                <rect x="${anchoTotal - SOLAPE}" y="0" width="${SOLAPE}" height="${altoTotal}" fill="rgba(255,0,0,0.2)" />
-                <line x1="${anchoTotal - SOLAPE}" y1="0" x2="${anchoTotal - SOLAPE}" y2="${altoTotal}" stroke="red" stroke-width="0.5" />
+                <rect x="0" y="0" width="${SOLAPE}" height="${altoTotal}" fill="rgba(255,0,0,0.2)" />
+                <line x1="${SOLAPE}" y1="0" x2="${SOLAPE}" y2="${altoTotal}" stroke="red" stroke-width="0.5" />
                 
                 <!-- Reservas superior e inferior -->
                 ${tieneTop ? `<rect x="0" y="0" width="${anchoTotal}" height="${EXTRA}" fill="rgba(0,255,0,0.2)" /><line x1="0" y1="${EXTRA}" x2="${anchoTotal}" y2="${EXTRA}" stroke="green" stroke-width="0.5" stroke-dasharray="2,2"/>` : ''}
                 ${tieneBot ? `<rect x="0" y="${altoTotal - EXTRA}" width="${anchoTotal}" height="${EXTRA}" fill="rgba(0,255,0,0.2)" /><line x1="0" y1="${altoTotal - EXTRA}" x2="${anchoTotal}" y2="${altoTotal - EXTRA}" stroke="green" stroke-width="0.5" stroke-dasharray="2,2"/>` : ''}
                 
                 <!-- Zona frontal centrada -->
-                <g transform="translate(${anchoUtil/2 - D/2}, 0)">
+                <g transform="translate(${SOLAPE + anchoUtil/2 - D/2}, 0)">
                     <line x1="0" y1="0" x2="0" y2="${altoTotal}" stroke="white" stroke-opacity="0.4" stroke-width="0.5" />
                     <line x1="${D}" y1="0" x2="${D}" y2="${altoTotal}" stroke="white" stroke-opacity="0.4" stroke-width="0.5" />
                     <text x="${D/2}" y="${altoTotal/2}" font-family="Arial" font-size="4" fill="white" fill-opacity="0.6" text-anchor="middle" alignment-baseline="middle" transform="rotate(-90 ${D/2} ${altoTotal/2})">VISTA FRONTAL ${D}mm</text>
@@ -165,7 +165,16 @@ export default function DesignConfigurator() {
                             aspectRatio: '1 / 1'
                         }}
                     >
-                        {currentDesign && <img src={currentDesign} className="absolute inset-0 w-full h-full object-cover" />}
+                        {currentDesign && (
+                            <img src={currentDesign} 
+                                className="absolute w-full h-full" 
+                                style={{
+                                    objectFit: currentMode === 'AUTO' ? 'cover' : 'contain',
+                                    transform: currentMode === 'AUTO' ? 'none' : `translate(${currentOffsetX * 100}%, ${currentOffsetY * 100}%) scale(${currentScale})`,
+                                    transformOrigin: 'center center'
+                                }}
+                            />
+                        )}
 
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                             {/* ZONA VISIBLE (Margen de 4mm -> -8mm en diámetro total) */}
@@ -187,12 +196,21 @@ export default function DesignConfigurator() {
                             aspectRatio: `${anchoTotal} / ${altoTotal}`,
                         }}
                     >
-                        {currentDesign && <img src={currentDesign} className="absolute inset-0 w-full h-full object-cover" />}
+                        {currentDesign && (
+                            <img src={currentDesign} 
+                                className="absolute w-full h-full" 
+                                style={{
+                                    objectFit: currentMode === 'AUTO' ? 'cover' : 'contain',
+                                    transform: currentMode === 'AUTO' ? 'none' : `translate(${currentOffsetX * 100}%, ${currentOffsetY * 100}%) scale(${currentScale})`,
+                                    transformOrigin: 'center center'
+                                }}
+                            />
+                        )}
 
                         {/* --- MARCAS TÉCNICAS TUBO --- */}
                         <div className="absolute inset-0 pointer-events-none">
                             {/* Solape (9mm) */}
-                            <div className="absolute top-0 right-0 bottom-0 border-l border-red-500 bg-red-500/10 flex items-center justify-center"
+                            <div className="absolute top-0 left-0 bottom-0 border-r border-red-500 bg-red-500/10 flex items-center justify-center"
                                 style={{ width: `${(SOLAPE / anchoTotal) * 100}%` }}>
                                 <span className="rotate-90 text-[8px] text-red-400 font-black tracking-widest uppercase">Pestaña Solape</span>
                             </div>
@@ -200,7 +218,7 @@ export default function DesignConfigurator() {
                             {/* ÁREA FRONTAL (D) */}
                             <div className="absolute top-0 bottom-0 border-x-2 border-white/40 bg-white/5"
                                 style={{
-                                    left: `${((anchoUtil / 2 - D / 2) / anchoTotal) * 100}%`,
+                                    left: `${((SOLAPE + anchoUtil / 2 - D / 2) / anchoTotal) * 100}%`,
                                     width: `${(D / anchoTotal) * 100}%`
                                 }}>
                                 <div className="absolute -top-6 left-0 right-0 text-center text-[9px] text-white/60 font-black uppercase">
