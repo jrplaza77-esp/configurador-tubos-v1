@@ -71,6 +71,9 @@ interface TubeState {
     setDesignDiscScale: (val: number) => void;
     setDesignDiscOffsetX: (val: number) => void;
     setDesignDiscOffsetY: (val: number) => void;
+
+    showFloor: boolean;
+    setShowFloor: (val: boolean) => void;
 }
 
 export const useTubeStore = create<TubeState>((set) => ({
@@ -109,6 +112,9 @@ export const useTubeStore = create<TubeState>((set) => ({
     designDiscScale: 1,
     designDiscOffsetX: 0,
     designDiscOffsetY: 0,
+
+    showFloor: true,
+    setShowFloor: (val) => set({ showFloor: val }),
 
     setActivePanel: (panel) => set({ activePanel: panel }),
     setSectionActive: (val) => set({ isSectionActive: val }),

@@ -44,7 +44,7 @@ function CameraController() {
 }
 
 export default function Viewer3D() {
-    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity, activePanel, floorColorDay, floorColorNight } = useTubeStore() as any;
+    const { isDarkMode, height, studioMode, arMode, lightIntensity, spotLightIntensity, envIntensity, activePanel, floorColorDay, floorColorNight, showFloor } = useTubeStore() as any;
     const centerY = (height * 0.1) / 2;
 
     const isRealismActive = activePanel === 'ESTUDIO' && studioMode;
@@ -72,7 +72,7 @@ export default function Viewer3D() {
                     
                     <MultiTubeAssembler />
 
-                    {!arMode && isRealismActive && (
+                    {!arMode && isRealismActive && showFloor && (
                         <group position={[0, -centerY, 0]}>
                             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
                                 <planeGeometry args={[500, 500]} />

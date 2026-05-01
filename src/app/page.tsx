@@ -417,7 +417,7 @@ function ColorPreset({ color, label, active, onClick, isDarkMode }: any) {
 }
 
 function PanelsContainer() {
-  const { activePanel, diameter, height, setDimensions, topCap, bottomCap, setCaps, plasticColor, setPlasticColor, isDarkMode, tubeColor, setTubeColor, discColor, setDiscColor, studioMode, setStudioMode, lightIntensity, setLightIntensity, spotLightIntensity, setSpotLightIntensity, envIntensity, setEnvIntensity, userDesign, designHeight, floorColorDay, floorColorNight, setFloorColorDay, setFloorColorNight } = useTubeStore() as any;
+  const { activePanel, diameter, height, setDimensions, topCap, bottomCap, setCaps, plasticColor, setPlasticColor, isDarkMode, tubeColor, setTubeColor, discColor, setDiscColor, studioMode, setStudioMode, lightIntensity, setLightIntensity, spotLightIntensity, setSpotLightIntensity, envIntensity, setEnvIntensity, userDesign, designHeight, floorColorDay, floorColorNight, setFloorColorDay, setFloorColorNight, showFloor, setShowFloor } = useTubeStore() as any;
   if (activePanel === 'NONE' || activePanel === 'ADMIN') return null;
 
   const selectClass = `w-full rounded-xl p-4 md:p-3 text-sm md:text-xs outline-none border transition-all ${isDarkMode ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-gray-50 text-black border-black/10'}`;
@@ -537,6 +537,16 @@ function PanelsContainer() {
               <button onClick={() => setStudioMode(false)} className={`px-3 py-1.5 text-[8px] font-black uppercase rounded-md transition-all ${!studioMode ? (isDarkMode ? 'bg-zinc-800 text-white shadow-sm' : 'bg-white text-black shadow-sm') : (isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-black/40 hover:text-black/80')}`}>Carga Rápida</button>
               <button onClick={() => setStudioMode(true)} className={`px-3 py-1.5 text-[8px] font-black uppercase rounded-md transition-all ${studioMode ? 'bg-[#008234] text-white shadow-sm' : (isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-black/40 hover:text-black/80')}`}>Realismo</button>
             </div>
+          </div>
+
+          <div className="flex items-center justify-between border-b border-black/5 pb-4">
+            <span className="text-[9px] text-[#008234] uppercase font-bold">Mostrar Suelo</span>
+            <button 
+              onClick={() => setShowFloor(!showFloor)}
+              className={`px-4 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${showFloor ? 'bg-[#008234] text-white shadow-md' : (isDarkMode ? 'bg-white/5 text-white/40 border border-white/10' : 'bg-black/5 text-black/40 border border-black/10')}`}
+            >
+              {showFloor ? 'Activado' : 'Desactivado'}
+            </button>
           </div>
           
           <div className="flex flex-col gap-3">
