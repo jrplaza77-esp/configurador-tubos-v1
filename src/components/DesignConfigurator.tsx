@@ -169,7 +169,7 @@ export default function DesignConfigurator() {
                             <img src={currentDesign} 
                                 className="absolute w-full h-full" 
                                 style={{
-                                    objectFit: currentMode === 'AUTO' ? 'cover' : 'contain',
+                                    objectFit: 'fill',
                                     transform: currentMode === 'AUTO' ? 'none' : `translate(${currentOffsetX * 100}%, ${currentOffsetY * 100}%) scale(${currentScale})`,
                                     transformOrigin: 'center center'
                                 }}
@@ -200,7 +200,7 @@ export default function DesignConfigurator() {
                             <img src={currentDesign} 
                                 className="absolute w-full h-full" 
                                 style={{
-                                    objectFit: currentMode === 'AUTO' ? 'cover' : 'contain',
+                                    objectFit: 'fill',
                                     transform: currentMode === 'AUTO' ? 'none' : `translate(${currentOffsetX * 100}%, ${currentOffsetY * 100}%) scale(${currentScale})`,
                                     transformOrigin: 'center center'
                                 }}
