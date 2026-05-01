@@ -274,24 +274,45 @@ export default function DesignConfigurator() {
                         </div>
 
                         {currentMode === 'MANUAL' && (
-                            <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center text-xs text-white/80 animate-in fade-in slide-in-from-bottom-2">
-                                <div className="flex flex-col w-full">
-                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
-                                        <span>Escala</span> <span className="text-green-400">x{currentScale.toFixed(2)}</span>
-                                    </div>
-                                    <input type="range" min="0.1" max="5" step="0.01" value={currentScale} onChange={(e) => isDiscTemplate ? setDesignDiscScale(Number(e.target.value)) : setDesignScale(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                            <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2">
+                                <div className="flex justify-end w-full px-2">
+                                    <button 
+                                        onClick={() => {
+                                            if (isDiscTemplate) {
+                                                setDesignDiscScale(1);
+                                                setDesignDiscOffsetX(0);
+                                                setDesignDiscOffsetY(0);
+                                            } else {
+                                                setDesignScale(1);
+                                                setDesignOffsetX(0);
+                                                setDesignOffsetY(0);
+                                            }
+                                        }}
+                                        className="text-[9px] text-white/50 hover:text-white uppercase font-bold tracking-widest flex items-center gap-1 transition-colors"
+                                    >
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                        Resetear Ajustes
+                                    </button>
                                 </div>
-                                <div className="flex flex-col w-full">
-                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
-                                        <span>Desfase H (Offset X)</span> <span className="text-green-400">{currentOffsetX.toFixed(2)}</span>
+                                <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center text-xs text-white/80">
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                            <span>Escala</span> <span className="text-green-400">x{currentScale.toFixed(2)}</span>
+                                        </div>
+                                        <input type="range" min="0.1" max="5" step="0.01" value={currentScale} onChange={(e) => isDiscTemplate ? setDesignDiscScale(Number(e.target.value)) : setDesignScale(Number(e.target.value))} className="accent-green-500 w-full h-1" />
                                     </div>
-                                    <input type="range" min="-1" max="1" step="0.01" value={currentOffsetX} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetX(Number(e.target.value)) : setDesignOffsetX(Number(e.target.value))} className="accent-green-500 w-full h-1" />
-                                </div>
-                                <div className="flex flex-col w-full">
-                                    <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
-                                        <span>Desfase V (Offset Y)</span> <span className="text-green-400">{currentOffsetY.toFixed(2)}</span>
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                            <span>Desfase H (Offset X)</span> <span className="text-green-400">{currentOffsetX.toFixed(2)}</span>
+                                        </div>
+                                        <input type="range" min="-1" max="1" step="0.01" value={currentOffsetX} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetX(Number(e.target.value)) : setDesignOffsetX(Number(e.target.value))} className="accent-green-500 w-full h-1" />
                                     </div>
-                                    <input type="range" min="-1" max="1" step="0.01" value={currentOffsetY} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetY(Number(e.target.value)) : setDesignOffsetY(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex justify-between font-bold text-[9px] tracking-widest uppercase mb-1">
+                                            <span>Desfase V (Offset Y)</span> <span className="text-green-400">{currentOffsetY.toFixed(2)}</span>
+                                        </div>
+                                        <input type="range" min="-1" max="1" step="0.01" value={currentOffsetY} onChange={(e) => isDiscTemplate ? setDesignDiscOffsetY(Number(e.target.value)) : setDesignOffsetY(Number(e.target.value))} className="accent-green-500 w-full h-1" />
+                                    </div>
                                 </div>
                             </div>
                         )}

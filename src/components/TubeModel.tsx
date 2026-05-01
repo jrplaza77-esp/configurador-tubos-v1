@@ -626,8 +626,21 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                             transparent={true}
                             polygonOffset={true}
                             polygonOffsetFactor={-1}
-                            clippingPlanes={isSectionActive ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)] : []
-                            } />
+                            clippingPlanes={isSectionActive ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)] : []}
+                            onBeforeCompile={(shader) => {
+                                shader.fragmentShader = shader.fragmentShader.replace(
+                                    '#include <map_fragment>',
+                                    `
+                                    #include <map_fragment>
+                                    #ifdef USE_MAP
+                                        if (vMapUv.x < 0.0 || vMapUv.x > 1.0 || vMapUv.y < 0.0 || vMapUv.y > 1.0) {
+                                            diffuseColor.a = 0.0;
+                                        }
+                                    #endif
+                                    `
+                                );
+                            }}
+                        />
                         <meshStandardMaterial attach="material-1" visible={false} />
                     </mesh>
                 )}
