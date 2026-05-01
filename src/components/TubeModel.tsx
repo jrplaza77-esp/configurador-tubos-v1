@@ -506,9 +506,9 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
 
     // 3. Materiales (Definiciones corregidas)
     const extMat = useMemo(() => {
-        const isKraft = (!userDesign && tubeColor === '#C5A16F');
+        const isKraft = (tubeColor === '#C5A16F');
         return new THREE.MeshPhysicalMaterial({
-            color: userDesign ? "#FFFFFF" : tubeColor,
+            color: tubeColor,
             map: isKraft ? kraftTex : null,
             side: THREE.FrontSide,
             metalness: 0.0,
@@ -517,7 +517,7 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
             clearcoat: 0.0,
             clippingPlanes: isSectionActive ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)] : []
         });
-    }, [kraftTex, userDesign, isSectionActive, tubeColor]);
+    }, [kraftTex, isSectionActive, tubeColor]);
 
     const intMat = useMemo(() => new THREE.MeshStandardMaterial({
         color: "#FFFFFF",
@@ -636,7 +636,7 @@ export function Sistema1Pieza({ height: h_custom, position = [0, 0, 0] }: any) {
                                     #include <map_fragment>
                                     #ifdef USE_MAP
                                         if (vMapUv.x < 0.0 || vMapUv.x > 1.0 || vMapUv.y < 0.0 || vMapUv.y > 1.0) {
-                                            diffuseColor.a = 0.0;
+                                            discard;
                                         }
                                     #endif
                                     `
